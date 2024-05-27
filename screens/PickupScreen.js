@@ -70,11 +70,11 @@ const PickupScreen = (props) => {
   const [refreshing, setRefreshing] = useState(false);
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
-  const isUserNew = props.route.params.isUserNew;
-  const addressID = props.route.params.addressID;
+  const isUserNew = props?.route?.params?.isUserNew;
+  const addressID = props?.route?.params?.addressID;
   var orderID;
   let PickupInternalScreenUpdated =
-    props.route.params.PickupInternalScreenUpdated;
+    props?.route?.params?.PickupInternalScreenUpdated;
 
   const route = useRoute();
 
@@ -139,9 +139,9 @@ const PickupScreen = (props) => {
     );
     return () => backHandler.remove();
   }, [
-    props.route.params.pickdropdata,
+    props?.route?.params?.pickdropdata,
     PickupInternalScreenUpdated,
-    props.route.params.orderID,
+    props?.route?.params?.orderID,
   ]);
 
 
@@ -150,14 +150,14 @@ const PickupScreen = (props) => {
     // ----------- Logic for Pick&Drop Starts ----------- //
     // console.log("FETCH DATA FUNCTION EXECUTED! ");
     // console.log(props);
-    if (props.route.params.pickdropdata) {
-      responsePickup = props.route.params.pickdropdata;
+    if (props?.route?.params?.pickdropdata) {
+      responsePickup = props?.route?.params?.pickdropdata;
       // console.log("---pickdropdata----");
-      orderID = props.route.params.pickdropdata.order_id;
-      setScreenTitle(props.route.params.pickdropdata.title);
+      orderID = props?.route?.params?.pickdropdata?.order_id;
+      setScreenTitle(props?.route?.params?.pickdropdata?.title);
     } else {
-      setScreenTitle(props.route.params.screenTitle);
-      orderID = props.route.params.orderID;
+      setScreenTitle(props?.route?.params?.screenTitle);
+      orderID = props?.route?.params?.orderID;
     }
     // ----------- Logic for Pick&Drop Ends ----------- //
     const { isConnected } = await NetInfo.fetch();
@@ -221,9 +221,9 @@ const PickupScreen = (props) => {
       console.log(error);
     }
   }, [
-    props.route.params.pickdropdata,
+    props?.route?.params?.pickdropdata,
     PickupInternalScreenUpdated,
-    props.route.params.orderID,
+    props?.route?.params?.orderID,
   ]))
 
 
@@ -254,7 +254,7 @@ const PickupScreen = (props) => {
       console.log("CHANGE SCREEN FUNCTION CALLED!");
       console.log("---", propsData.route.params.pickdropdata);
       if (propsData.route.params.pickdropdata) {
-        orderID = propsData.route.params.pickdropdata.order_id;
+        orderID = propsData.route.params.pickdropdata?.order_id;
       } else {
         orderID = propsData.route.params.orderID;
       }
@@ -395,10 +395,10 @@ const PickupScreen = (props) => {
                     <TouchableOpacity
                       style={styles.bottomButtons}
                       onPress={() => {
-                        if (props.route.params.pickdropdata) {
-                          orderID = props.route.params.pickdropdata.order_id;
+                        if (props?.route?.params?.pickdropdata) {
+                          orderID = props?.route?.params?.pickdropdata?.order_id;
                         } else {
-                          orderID = props.route.params.orderID;
+                          orderID = props?.route?.params?.orderID;
                         }
                         props.navigation.navigate("Confirm Order", {
                           rider_id: storedRiderID,
@@ -410,7 +410,7 @@ const PickupScreen = (props) => {
                           isUserNew: isUserNew,
                           addressID: addressID,
                           setOrderNote: setOrderNote,
-                          recentOrders: props.route.params.recentOrders,
+                          recentOrders: props?.route?.params?.recentOrders,
                         });
                       }}
                     >
@@ -422,16 +422,16 @@ const PickupScreen = (props) => {
                         { backgroundColor: "#c1c1c1" },
                       ]}
                       onPress={() => {
-                        if (props.route.params.pickdropdata) {
-                          orderID = props.route.params.pickdropdata.order_id;
+                        if (props?.route?.params?.pickdropdata) {
+                          orderID = props?.route?.params?.pickdropdata?.order_id;
                         } else {
-                          orderID = props.route.params.orderID;
+                          orderID = props?.route?.params?.orderID;
                         }
                         props.navigation.navigate("CancelScreen", {
                           rider_id: storedRiderID,
                           order_id: orderID,
                           screenTitle: screenTitle,
-                          recentOrders: props.route.params.recentOrders,
+                          recentOrders: props?.route?.params?.recentOrders,
                         });
                       }}
                     >
@@ -446,16 +446,16 @@ const PickupScreen = (props) => {
                 <TouchableOpacity
                   style={[styles.bottomButtons]}
                   onPress={() => {
-                    if (props.route.params.pickdropdata) {
-                      orderID = props.route.params.pickdropdata.order_id;
+                    if (props?.route?.params?.pickdropdata) {
+                      orderID = props?.route?.params?.pickdropdata?.order_id;
                     } else {
-                      orderID = props.route.params.orderID;
+                      orderID = props?.route?.params?.orderID;
                     }
                     props.navigation.navigate("CancelScreen", {
                       rider_id: storedRiderID,
                       order_id: orderID,
                       screenTitle: screenTitle,
-                      recentOrders: props.route.params.recentOrders,
+                      recentOrders: props?.route?.params?.recentOrders,
                     });
                   }}
                 >

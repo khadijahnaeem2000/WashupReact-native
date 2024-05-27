@@ -73,3 +73,5 @@ web-build/
 
 # @end expo-cli
 
+*.yarn/
+yarn/caches/

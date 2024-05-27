@@ -92,7 +92,6 @@ function CustomDrawerContent(props) {
     
     const meterCheck = async () => {
         try {
-            console.log("CHECKING METER STATUS");
             let savedToken = await SecureStore.getItemAsync("token");
             savedToken = savedToken.substring(1, savedToken.length - 1);
             console.log("Token --> ", savedToken, typeof savedToken);
@@ -109,15 +108,11 @@ function CustomDrawerContent(props) {
             console.log("Fetching Data From", finalURL);
             let response = await fetchWithTimeout(finalURL, requestOptions, 10000);
             response = await response.json();
-            console.log("----- Checking Day Status For Meter -------3");
-            console.log(response);
             await AsyncStorage.setItem(
                 "meter",
                 JSON.stringify({ startDay: response.startDay, endDay: response.endDay })
             );
-            console.log("----- Checking Day Status For Meter -------4");
         } catch (error) {
-            console.log("Error in setting meter data!", error);
         }
     };
 

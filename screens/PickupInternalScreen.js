@@ -22,35 +22,35 @@ const MAX_RETRIES = 3; // Maximum number of retries
 const RETRY_INTERVAL = 1000; // Retry interval in milliseconds
 
 async function fetchWithTimeout(url, options, timeout) {
-    return new Promise(async (resolve, reject) => {
-        const timeoutId = setTimeout(() => {
-            reject(new Error('Request Timeout'));
-        }, timeout);
+  return new Promise(async (resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      reject(new Error('Request Timeout'));
+    }, timeout);
 
-        try {
-            const response = await fetch(url, options);
-            clearTimeout(timeoutId);
-            resolve(response);
-        } catch (error) {
-            clearTimeout(timeoutId);
-            reject(error);
-        }
-    });
+    try {
+      const response = await fetch(url, options);
+      clearTimeout(timeoutId);
+      resolve(response);
+    } catch (error) {
+      clearTimeout(timeoutId);
+      reject(error);
+    }
+  });
 }
 
 async function fetchWithRetry(url, options, timeout, retries) {
-    for (let i = 0; i < retries; i++) {
-        try {
-            const response = await fetchWithTimeout(url, options, timeout);
-            return response;
-        } catch (error) {
-            if (i === retries - 1) {
-                throw error;
-            }
-            await new Promise(resolve => setTimeout(resolve, RETRY_INTERVAL));
-        }
+  for (let i = 0; i < retries; i++) {
+    try {
+      const response = await fetchWithTimeout(url, options, timeout);
+      return response;
+    } catch (error) {
+      if (i === retries - 1) {
+        throw error;
+      }
+      await new Promise(resolve => setTimeout(resolve, RETRY_INTERVAL));
     }
-}const PickupInternalScreen = (props) => {
+  }
+} const PickupInternalScreen = (props) => {
   let responsePickup;
   const URL = env.URL + props.route.params.apiPath;
   const order_id = props.route.params.order_id;
@@ -100,7 +100,6 @@ async function fetchWithRetry(url, options, timeout, retries) {
 
   useEffect(() => {
     try {
-      console.log(URL);
       setWeight(""); //clears the weight value for different screen!
       setCurrentItemNote("");
       setQuery("");
@@ -247,10 +246,18 @@ async function fetchWithRetry(url, options, timeout, retries) {
     }
 
     let items_selected = [];
+    let emptyPieces = false
     for (let key in listData) {
       if (listData[key]["quantity"] > 0) {
         items_selected.push(listData[key]);
+      } else {
+        emptyPieces = true
+
       }
+    }
+    if (emptyPieces == 0) {
+      Alert.alert("Incorrect Pieces", "Pieces must be greater than 0");
+      return;
     }
     const sendDataObj = {
       rider_id: rider_id,
@@ -259,79 +266,79 @@ async function fetchWithRetry(url, options, timeout, retries) {
       items_selected: items_selected,
       weight: weight,
     };
-    console.log(sendDataObj);
-    const confirmURL = env.URL + env.api_confirmpickupservice;
-    savedToken = await SecureStore.getItemAsync("token");
-    savedToken = savedToken.substring(1, savedToken.length - 1);
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    myHeaders.append("Authorization", `Bearer ${savedToken}`);
-    var raw = JSON.stringify(sendDataObj);
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-      redirect: "follow",
-    };
-    alert("Sending Data, Please Wait!");
-    console.log("Sending Data To: ", confirmURL);
-    console.log(raw);
-    console.log("Token --->", savedToken);
-    setRefreshing(true);
-    fetchWithTimeout(
-      confirmURL,
-      requestOptions,
-      10000,
-      "Request Timeout, Check Your Connection"
-    )
-      .then((response) => response.text())
-      .then((result) => {
-        console.log(result, typeof result);
-        result = JSON.parse(result);
-        console.log(result, typeof result);
-        if (result.status === "success") {
-          let totalQuantity = 0;
-          // ---------- Summing up total items for notification! ------------ //
-          for (let key in listData) {
-            console.log(
-              "---->",
-              listData[key]["quantity"],
-              typeof listData[key]["quantity"],
-              totalQuantity,
-              typeof totalQuantity
-            );
-            if (listData[key]["quantity"] > 0) {
-              totalQuantity = totalQuantity + listData[key]["quantity"];
-              console.log("===>", totalQuantity);
-            }
-          }
-          Alert.alert(
-            `${props.route.params.screenHeader}`,
-            `Body: ${totalQuantity} Items, Weight: ${weight}`
-          );
-          PickupInternalScreenUpdated
-            ? setPickupInternalScreenUpdated(false)
-            : setPickupInternalScreenUpdated(true);
-            props.navigation.navigate("Pickup", {
-              orderID: order_id,
+    console.log(sendDataObj, "sendDataObj");
+    // const confirmURL = env.URL + env.api_confirmpickupservice;
+    // savedToken = await SecureStore.getItemAsync("token");
+    // savedToken = savedToken.substring(1, savedToken.length - 1);
+    // const myHeaders = new Headers();
+    // myHeaders.append("Content-Type", "application/json");
+    // myHeaders.append("Authorization", `Bearer ${savedToken}`);
+    // var raw = JSON.stringify(sendDataObj);
+    // const requestOptions = {
+    //   method: "POST",
+    //   headers: myHeaders,
+    //   body: raw,
+    //   redirect: "follow",
+    // };
+    // alert("Sending Data, Please Wait!");
+    // console.log("Sending Data To: ", confirmURL);
+    // console.log(raw);
+    // console.log("Token --->", savedToken);
+    // setRefreshing(true);
+    // fetchWithTimeout(
+    //   confirmURL,
+    //   requestOptions,
+    //   10000,
+    //   "Request Timeout, Check Your Connection"
+    // )
+    //   .then((response) => response.text())
+    //   .then((result) => {
+    //     console.log(result, typeof result);
+    //     result = JSON.parse(result);
+    //     console.log(result, typeof result);
+    //     if (result.status === "success") {
+    //       let totalQuantity = 0;
+    //       // ---------- Summing up total items for notification! ------------ //
+    //       for (let key in listData) {
+    //         console.log(
+    //           "---->",
+    //           listData[key]["quantity"],
+    //           typeof listData[key]["quantity"],
+    //           totalQuantity,
+    //           typeof totalQuantity
+    //         );
+    //         if (listData[key]["quantity"] > 0) {
+    //           totalQuantity = totalQuantity + listData[key]["quantity"];
+    //           console.log("===>", totalQuantity);
+    //         }
+    //       }
+    //       Alert.alert(
+    //         `${props.route.params.screenHeader}`,
+    //         `Body: ${totalQuantity} Items, Weight: ${weight}`
+    //       );
+    //       PickupInternalScreenUpdated
+    //         ? setPickupInternalScreenUpdated(false)
+    //         : setPickupInternalScreenUpdated(true);
+    //         props.navigation.navigate("Pickup", {
+    //           orderID: order_id,
 
-              
-            }),
-          setRefreshing(true);
-        } else {
-          Alert.alert("Server Error! Data Not Sent!");
-          setRefreshing(false);
-        }
-      })
-      .catch((error) => {
-        console.log("--000--");
-        error = "Request Timeout, Check Your Connection"
-          ? alert("Request Timeout, Check Your Connection")
-          : alert("Server Error!");
-        console.log(error);
-        console.log("--001--");
-        setRefreshing(false);
-      });
+
+    //         }),
+    //       setRefreshing(true);
+    //     } else {
+    //       Alert.alert("Server Error! Data Not Sent!");
+    //       setRefreshing(false);
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     console.log("--000--");
+    //     error = "Request Timeout, Check Your Connection"
+    //       ? alert("Request Timeout, Check Your Connection")
+    //       : alert("Server Error!");
+    //     console.log(error);
+    //     console.log("--001--");
+    //     setRefreshing(false);
+    //   });
   };
 
   //--------------------FUNCTIONS END------------------//

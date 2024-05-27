@@ -175,16 +175,12 @@ export const signIn = (email, password) => {
                         finalURL, requestOptions, 10000, 'Request Timeout, Check Your Connection'
                         );
                         response = await response.json();
-                        console.log('----- Checking Day Status For Meter -------1')
-                        console.log(response)
                         await AsyncStorage.setItem(
                         'meter',
                         JSON.stringify({startDay:response.startDay, endDay:response.endDay})
                         );
-                        console.log('----- Checking Day Status For Meter -------2')
                     }
                     catch(err){
-                        console.log("Error in setting meter data!",err)
                         dispatch({ type: REFRESHING, payload:false })
                     }
 
