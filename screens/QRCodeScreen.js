@@ -15,7 +15,6 @@ const QRCodeScreen = props => {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
 
-
   useEffect(() => {
     const getCameraPermissions = async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
@@ -66,6 +65,13 @@ const QRCodeScreen = props => {
           },
           {
             text: "OK", onPress: () => {
+              props.navigation.navigate("Drop Off", {
+                screenTitle: props?.route?.params?.screenTitle,
+                screenType: "Drop Off",
+                orderID: props?.route?.params?.orderID,
+                customerID: props?.route?.params?.customerID,
+                recentOrders: false,
+              })
               // props.navigation.goBack()
             }
           }
@@ -78,6 +84,8 @@ const QRCodeScreen = props => {
       Alert.alert("Wrong QR Code Scanned!!", data)
     }
   }
+
+
 
 
   if (hasPermission === null) {
@@ -109,7 +117,7 @@ const QRCodeScreen = props => {
         barcodeScannerSettings={{
           barcodeTypes: ["qr", "pdf417"],
         }}
-        style={StyleSheet.absoluteFillObject}
+        style={{ flex: 1 }}
       />
       {scanned && (
         <Button title={"Tap to Scan Again"} onPress={() => setScanned(false)} />

@@ -86,8 +86,6 @@ const DropOffScreen = (props) => {
   }, []);
 
 
-
-
   const [refreshingStoredData, setRefreshingStoredData] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [receivedAmount, setReceivedAmount] = useState("");
@@ -185,17 +183,11 @@ const DropOffScreen = (props) => {
   let initialURL;
 
   useEffect(() => {
-    try {
+    console.log("useEffect me ayyayayayay")
       setAllQRscanned(false);
       fetchData();
-    } catch (error) {
-      Alert.alert(error);
-    }
-  }, [screenTitle, orderID]);
+  }, []);
 
-  useEffect(() => {
-    LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
-  }, [screenTitle]);
 
   if (isNaN(receivedAmount)) {
     // If the Given Value is Not Number Then It Will Return True and This Part Will Execute.
@@ -427,6 +419,7 @@ const DropOffScreen = (props) => {
   };
   const ItemPolybag = ({ item, onPress }) => {
     const scanQRFunc = (qrData) => {
+
       item.polybag_qr = qrData;
       //For loop is necessary because it verifies scanning of every qr scan.
       for (let key in listData.polybag_items) {
@@ -436,6 +429,7 @@ const DropOffScreen = (props) => {
         QRScanHeading = [styles.TapableBox, styles.ScanTapperGreen];
         setAllQRscanned(true);
       }
+
       QRState ? setQRState(false) : setQRState(true);
     };
     let colorQR = null;
@@ -458,6 +452,11 @@ const DropOffScreen = (props) => {
                 ? props.navigation.navigate("QR Code", {
                   itemData: item,
                   scanQRFunc: scanQRFunc,
+                  screenTitle: screenTitle,
+                  screenType: "Drop Off",
+                  orderID: orderID,
+                  customerID: customerID,
+                  recentOrders: false,
                 })
                 : null;
             }}

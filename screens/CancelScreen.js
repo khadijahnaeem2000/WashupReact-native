@@ -15,8 +15,6 @@ import NetInfo from "@react-native-community/netinfo";
 import Header from "../components/Header";
 import { env } from "../env";
 import { Picker } from "@react-native-picker/picker";
-const MAX_RETRIES = 3; // Maximum number of retries
-const RETRY_INTERVAL = 1000; // Retry interval in milliseconds
 
 async function fetchWithTimeout(url, options, timeout) {
     return new Promise(async (resolve, reject) => {
@@ -35,19 +33,6 @@ async function fetchWithTimeout(url, options, timeout) {
     });
 }
 
-async function fetchWithRetry(url, options, timeout, retries) {
-    for (let i = 0; i < retries; i++) {
-        try {
-            const response = await fetchWithTimeout(url, options, timeout);
-            return response;
-        } catch (error) {
-            if (i === retries - 1) {
-                throw error;
-            }
-            await new Promise(resolve => setTimeout(resolve, RETRY_INTERVAL));
-        }
-    }
-}
 const CancelScreen = (props) => {
   const URL = env.URL + env.api_cancel;
   const order_id = props.route.params.order_id;

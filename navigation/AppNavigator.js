@@ -27,8 +27,6 @@ import NetInfo from "@react-native-community/netinfo";
 import * as authActions from "../store/actions/auth";
 import { useSelector, useDispatch } from "react-redux";
 import { env } from "../env";
-const MAX_RETRIES = 3; // Maximum number of retries
-const RETRY_INTERVAL = 1000; // Retry interval in milliseconds
 
 async function fetchWithTimeout(url, options, timeout) {
     return new Promise(async (resolve, reject) => {
@@ -47,20 +45,6 @@ async function fetchWithTimeout(url, options, timeout) {
     });
 }
 
-async function fetchWithRetry(url, options, timeout, retries) {
-    for (let i = 0; i < retries; i++) {
-        try {
-            const response = await fetchWithTimeout(url, options, timeout);
-            return response;
-        } catch (error) {
-            if (i === retries - 1) {
-                throw error;
-            }
-            await new Promise(resolve => setTimeout(resolve, RETRY_INTERVAL));
-        }
-    }
-}
-
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 let storedEmail;
@@ -72,7 +56,6 @@ const meterCheck = async () => {
   try {
     let savedToken = await SecureStore.getItemAsync("token");
     savedToken = savedToken.substring(1, savedToken.length - 1);
-    console.log("Token --> ", savedToken, typeof savedToken);
     let myHeaders = new Headers();
     myHeaders.append("Accept", "application/json");
     myHeaders.append("Authorization", `Bearer ${savedToken}`);
@@ -109,40 +92,30 @@ const checkAuth = async () => {
   }
   try {
     storedEmail = await AsyncStorage.getItem("email");
-    console.log("-------------------->", storedEmail);
   } catch (err) {
-    console.log("Error in Retrieving Email from AsyncStorage");
   }
 
   try {
     storedToken = await SecureStore.getItemAsync("token");
-    console.log("-------------------->", storedToken);
   } catch (err) {
-    console.log("Error in Retrieving Email from AsyncStorage");
   }
   try {
     storedRiderID = await AsyncStorage.getItem("rider_id");
-    console.log("-------------------->", storedRiderID);
   } catch (err) {
-    console.log("Error in Retrieving Rider ID from AsyncStorage");
   }
   meterCheck(); //This function is for checking meter status
 };
 
 const AppNavigator = () => {
   const [authenticatedMeterCheck, setAuthenticatedMeterCheck] = useState(false);
-  console.log("Initiating Application! -- APP NAVIGATOR STARTS  ");
   const state = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-  console.log("Application State :  ", state);
   //Following Snippet is for Splash Screen! It checks if token and email exists!
   if (!!state.isSignedIn & !!state.isTokenChecked) {
     return (
       <AppLoading
         startAsync={checkAuth}
         onFinish={() => {
-          console.log("FINISHED LOADING THE APP!");
-          console.log("Application State After AppLoading : ", state);
           if (storedEmail && storedToken) {
             dispatch(authActions.alreadySignedIn());
           } else {

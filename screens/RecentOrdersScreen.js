@@ -15,7 +15,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
 import NetInfo from "@react-native-community/netinfo";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import header from "../assets/images/header.png";
 import DropOffImage from "../assets/images/dropoff_simple.png";
 import PickUpImage from "../assets/images/pickup_simple.png";
 import dropoffAndPickupImage from "../assets/images/dropoffAndPickup_simple.png";
@@ -23,8 +22,6 @@ import toBePackedImage from "../assets/images/tobepacked_simple.png";
 import handImg from "../assets/images/hand_simple.png";
 import Header from "../components/Header";
 import { env } from "../env";
-const MAX_RETRIES = 3; // Maximum number of retries
-const RETRY_INTERVAL = 1000; // Retry interval in milliseconds
 
 async function fetchWithTimeout(url, options, timeout) {
     return new Promise(async (resolve, reject) => {
@@ -43,27 +40,15 @@ async function fetchWithTimeout(url, options, timeout) {
     });
 }
 
-async function fetchWithRetry(url, options, timeout, retries) {
-    for (let i = 0; i < retries; i++) {
-        try {
-            const response = await fetchWithTimeout(url, options, timeout);
-            return response;
-        } catch (error) {
-            if (i === retries - 1) {
-                throw error;
-            }
-            await new Promise(resolve => setTimeout(resolve, RETRY_INTERVAL));
-        }
-    }
-}//-----------------FOR IMAGES-----------------//
 const DropOffImageURI = Image.resolveAssetSource(DropOffImage).uri;
 const PickUpImageURI = Image.resolveAssetSource(PickUpImage).uri;
-const dropoffAndPickupImageURI = Image.resolveAssetSource(dropoffAndPickupImage)
-  .uri;
+const dropoffAndPickupImageURI = Image.resolveAssetSource(dropoffAndPickupImage).uri;
 const toBePackedURI = Image.resolveAssetSource(toBePackedImage).uri;
 const handImgURI = Image.resolveAssetSource(handImg).uri;
 let selectedURI;
-//-----------------FOR IMAGES-----------------//
+
+
+
 const RecentOrdersScreen = (props) => {
   const URL = env.URL + env.api_recentorders;
   const [startDay, setStartDay] = useState();

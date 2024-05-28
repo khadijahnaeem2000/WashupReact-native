@@ -22,8 +22,6 @@ import DropOffImage from "../assets/images/dropoff.png";
 import PickUpImage from "../assets/images/pickup.png";
 import washupLogo from "../assets/images/logo.png";
 import { env } from "../env";
-const MAX_RETRIES = 3; // Maximum number of retries
-const RETRY_INTERVAL = 1000; // Retry interval in milliseconds
 
 async function fetchWithTimeout(url, options, timeout) {
   return new Promise(async (resolve, reject) => {
@@ -42,19 +40,6 @@ async function fetchWithTimeout(url, options, timeout) {
   });
 }
 
-async function fetchWithRetry(url, options, timeout, retries) {
-  for (let i = 0; i < retries; i++) {
-    try {
-      const response = await fetchWithTimeout(url, options, timeout);
-      return response;
-    } catch (error) {
-      if (i === retries - 1) {
-        throw error;
-      }
-      await new Promise(resolve => setTimeout(resolve, RETRY_INTERVAL));
-    }
-  }
-}
 //-----------------FOR IMAGES-----------------//
 const headerURI = Image.resolveAssetSource(header).uri;
 const AllLocationsImageURI = Image.resolveAssetSource(AllLocationsImage).uri;

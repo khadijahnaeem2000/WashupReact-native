@@ -45,24 +45,20 @@ async function fetchWithRetry(url, options, timeout, retries) {
     }
 }
 export const alreadySignedIn = () => {
-    console.log('AUTHENTICATION ACTION : ALREADY_SIGNED_IN')
     return async dispatch => { 
         dispatch({ type: ALREADY_SIGNED_IN })
     }
 }
 
 export const notSignedIn = () => {
-    console.log('AUTHENTICATION ACTION : NOT_SIGNED_IN')
     return async dispatch => { 
         dispatch({ type: NOT_SIGNED_IN })
     }
 }
 export const signOut = () => {
     return async dispatch => { 
-        console.log('AUTHENTICATION ACTION : SIGN_OUT')
         let savedToken = await SecureStore.getItemAsync('token');
         savedToken = savedToken.substring(1, savedToken.length-1);
-        console.log("=======================================>",savedToken)
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
         myHeaders.append("Authorization", `Bearer ${savedToken}`);
@@ -83,12 +79,7 @@ export const signOut = () => {
 export const signIn = (email, password) => {
     URL_SignIn = env.URL + env.api_login
     return async dispatch => { 
-        console.log('AUTHENTICATION ACTION : SIGN_IN')
-        console.log('---')
-        console.log(email)
-        console.log(password)
-        console.log(URL_SignIn)
-        console.log('---')
+        
 
 
         dispatch({ type: REFRESHING, payload:true })
@@ -106,21 +97,12 @@ export const signIn = (email, password) => {
             }, 10000, MAX_RETRIES);
                 try{
                     let json = await response.json();
-                    // console.log(json)
-                    // console.log(json.token)
-                    console.log("--1")
-                    console.log(json)
-                    console.log("--2")
-                    console.log(json.token)
-                    console.log(json.rider_id)
-                    console.log("--3")
 
                     try{
                         await SecureStore.setItemAsync(
                             'token',
                             JSON.stringify(json.token)
                         );
-                        console.log("Token has been stored in the device!")
                     }
                     catch(err){
                         console.log("Token Not Received!",err)
@@ -133,10 +115,8 @@ export const signIn = (email, password) => {
                             JSON.stringify(json.username)
                              );
                         
-                        console.log("Username has been stored in the device!")
                     }
                     catch(err){
-                        console.log("Username Not Received!",err)
                         dispatch({ type: REFRESHING, payload:false })
                     }
                     
@@ -146,7 +126,6 @@ export const signIn = (email, password) => {
                             JSON.stringify(json.rider_id)
                              );
                         
-                        console.log("Rider ID has been stored in the device!")
                     }
                     catch(err){
                         console.log("Username Not Received!",err)
@@ -156,9 +135,7 @@ export const signIn = (email, password) => {
                     try{
                         let savedToken = await SecureStore.getItemAsync('token');
                         savedToken = savedToken.substring(1, savedToken.length-1);
-                        console.log("Token --> ",savedToken, typeof savedToken)
                         storedRiderID = await AsyncStorage.getItem('rider_id')
-                        console.log("Rider ID -=-=>",storedRiderID)
                         let myHeaders = new Headers();
                         myHeaders.append("Accept", "application/json");
                         myHeaders.append("Authorization", `Bearer ${savedToken}`);
@@ -189,13 +166,11 @@ export const signIn = (email, password) => {
                         dispatch({ type: REFRESHING, payload:false })
                     }
                     else{
-                        console.log("Login Failed!")
                         alert("Login Failed! Wrong Username or Password!'")
                         dispatch({ type: SIGN_IN_ERROR, payload:'Wrong Username or Password!' })
                     }
                 }
                 catch(err){
-                    console.log("JSON NOT RECIEVED FROM THE SERVER!")
                     alert("Server Error!")
                     dispatch({ type: REFRESHING, payload:false })
                 }
