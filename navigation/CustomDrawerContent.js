@@ -60,25 +60,19 @@ function CustomDrawerContent(props) {
     };
 
     useEffect(() => {
-        console.log("useEffect triggered");
         getStoredData()
             .then(() => {
-                console.log("getStoredData completed successfully");
                 meterCheck();
             })
             .catch(error => {
-                console.log("Error in getStoredData:", error);
             });
     },);
     const getStoredData = async () => {
         try {
             let storedEmail = await AsyncStorage.getItem("profileName");
             storedEmail = storedEmail.substring(1, storedEmail.length - 1);
-            console.log("Retrieved email from AsyncStorage:", storedEmail);
             setProfileName(storedEmail);
-            console.log("Updated profileName state:", profileName);
         } catch (err) {
-            console.log("Error in Retrieving Email from AsyncStorage:", err);
         }
         try {
             let storedProfilePicURL = await AsyncStorage.getItem("profilePicURL");
@@ -86,7 +80,6 @@ function CustomDrawerContent(props) {
             storedProfilePicURL = `${URL}uploads/riders/${storedProfilePicURL}`;
             setProfilePic(storedProfilePicURL);
         } catch (err) {
-            console.log("Error in Retrieving Profile Pic from AsyncStorage:", err);
         }
     };
     
@@ -94,7 +87,6 @@ function CustomDrawerContent(props) {
         try {
             let savedToken = await SecureStore.getItemAsync("token");
             savedToken = savedToken.substring(1, savedToken.length - 1);
-            console.log("Token --> ", savedToken, typeof savedToken);
             let myHeaders = new Headers();
             myHeaders.append("Accept", "application/json");
             myHeaders.append("Authorization", `Bearer ${savedToken}`);
@@ -105,7 +97,6 @@ function CustomDrawerContent(props) {
                 redirect: "follow",
             };
             let finalURL = `${MeterStatusURL}/${storedRiderID}`;
-            console.log("Fetching Data From", finalURL);
             let response = await fetchWithTimeout(finalURL, requestOptions, 10000);
             response = await response.json();
             await AsyncStorage.setItem(
@@ -119,7 +110,6 @@ function CustomDrawerContent(props) {
     const { state, ...rest } = props;
     const newState = { ...state };
 
-    console.log("working on navigator");
     newState.routes = newState.routes.filter((item) => !["Pickup", "PickupInternal", "Drop Off", "QR Code", "PickupInternalAddonsScreen", "CancelScreen", "Confirm Order"].includes(item.name));
 
     return (

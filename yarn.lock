@@ -5267,6 +5267,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-camera@npm:~14.1.3":
+  version: 14.1.3
+  resolution: "expo-camera@npm:14.1.3"
+  dependencies:
+    invariant: ^2.2.4
+  peerDependencies:
+    expo: "*"
+  checksum: c6b99409f1631d8bf747e43dd1cc6cd84068bdb32d324f7a129f2d40016a72a4f271fea3944d13ba940204e613c095a7241715f0808e6f4545c9e37af361bc83
+  languageName: node
+  linkType: hard
+
 "expo-checkbox@npm:~2.7.0":
   version: 2.7.0
   resolution: "expo-checkbox@npm:2.7.0"
@@ -11048,6 +11059,7 @@ __metadata:
     eas: ^0.1.0
     expo: ~50.0.13
     expo-barcode-scanner: ~12.9.3
+    expo-camera: ~14.1.3
     expo-checkbox: ~2.7.0
     expo-constants: ~15.4.5
     expo-image-manipulator: ~11.8.0

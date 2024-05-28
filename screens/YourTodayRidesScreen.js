@@ -116,7 +116,6 @@ const YourTodayRidesScreen = (props) => {
   async function fetchStoredData() {
     try {
       storedMeterData = await AsyncStorage.getItem("meter");
-      console.log("sadasdasdasdas" , storedMeterData)
       storedMeterData = JSON.parse(storedMeterData);
       setStartDay(storedMeterData.startDay);
       setEndDay(storedMeterData.endDay);
@@ -135,7 +134,6 @@ const YourTodayRidesScreen = (props) => {
           setEndDayNotification(false);
         } catch (error) {
           Alert.alert(error);
-          console.log(error);
         }
       },
       [refreshScreen, refreshForDropOffPoint],
@@ -145,7 +143,6 @@ const YourTodayRidesScreen = (props) => {
     try {
       setEndDayNotification(false);
     } catch (error) {
-      console.log(error);
     }
   }, [storedMeterData, refreshScreen]);
 
@@ -153,31 +150,25 @@ const YourTodayRidesScreen = (props) => {
     try {
       fetchData();
     } catch (e) {
-      console.log(e);
     }
   }, [refreshing]);
   // ----------- FUNCTIONS STARTS HERE ---------- //
   const pressMap = (props_map) => (props) => {
-    console.log(props_map);
-    console.log("Call Pressed!");
     Linking.openURL(`http://maps.google.com/?daddr=${props_map}`);
   };
   const pressCall = (props_call) => (props) => {
-    console.log(props_call);
-    console.log("Map Pressed!");
     Linking.openURL(`tel://${props_call}`);
   };
   const changeScreen = (props_screen, props_navigation, item) => (props) => {
     const screenTitle = item.title;
     if (props_screen === "Drop Off") {
-      console.log("-->Drop Off");
-      console.log({
-        screenTitle: screenTitle,
-        screenType: "Drop Off",
-        orderID: item.order_id.toString(),
-        customerID: item.customer_id,
-        recentOrders: false,
-      });
+      // console.log({
+      //   screenTitle: screenTitle,
+      //   screenType: "Drop Off",
+      //   orderID: item.order_id.toString(),
+      //   customerID: item.customer_id,
+      //   recentOrders: false,
+      // });
       props_navigation.navigate("Drop Off", {
         screenTitle: screenTitle,
         screenType: "Drop Off",
@@ -186,7 +177,6 @@ const YourTodayRidesScreen = (props) => {
         recentOrders: false,
       });
     } else if (props_screen === "Pickup") {
-      console.log("-->Pickup");
       props_navigation.navigate("Pickup", {
         screenTitle: screenTitle,
         orderID: item.order_id.toString(),
@@ -197,7 +187,6 @@ const YourTodayRidesScreen = (props) => {
         recentOrders: false,
       });
     } else if (props_screen === "Pick & Drop") {
-      console.log("-->Pick & Drop");
       props_navigation.navigate("Drop Off", {
         screenTitle: screenTitle,
         screenType: "Pick & Drop",
@@ -205,22 +194,18 @@ const YourTodayRidesScreen = (props) => {
         recentOrders: false,
       });
     } else if (props_screen === "To Be Packed") {
-      console.log("-->To Be Packed [Screen Won't Change]");
     }
   };
+
   async function fetchData() {
-    console.log("Day Status", startDay);
     const { isConnected } = await NetInfo.fetch();
     storedRiderID = await AsyncStorage.getItem("rider_id");
-    console.log("Rider ID -=-=>", storedRiderID);
     const finalURL = URL + `/${storedRiderID}`;
-    console.log("Fetching Data From:", finalURL);
     if (isConnected) {
       try {
         setRefreshing(true);
         let savedToken = await SecureStore.getItemAsync("token");
         savedToken = savedToken.substring(1, savedToken.length - 1);
-        // console.log("Token --> ",savedToken, typeof savedToken)
         let myHeaders = new Headers();
         myHeaders.append("Accept", "application/json");
         myHeaders.append("Authorization", `Bearer ${savedToken}`);
@@ -237,21 +222,12 @@ const YourTodayRidesScreen = (props) => {
         );
         setRefreshing(false);
         let responseJson = await response.json();
-        // console.log(responseJson);
-        console.log("-----------------------------------1");
-        console.log(responseJson);
-        console.log("-----------------------------------2");
         setListData(responseJson);
-        console.log(listData);
-        // console.log("----")
         setRefreshing(false);
       } catch (error) {
-        console.log("--000--");
         error = "Request Timeout, Check Your Connection"
           ? alert("Request Timeout, Check Your Connection")
           : alert("Server Error!");
-        console.log(error);
-        console.log("--001--");
         setRefreshing(false);
       }
     } else {
@@ -261,8 +237,6 @@ const YourTodayRidesScreen = (props) => {
   }
   // ----------- FUNCTIONS ENDS HERE ------------//
   const renderItem = ({ item }) => {
-    console.log(item);
-    console.log("-->123");
     return (
       <Item
         item={item}
@@ -280,18 +254,15 @@ const YourTodayRidesScreen = (props) => {
         [
           {
             text: "Cancel",
-            onPress: () => console.log("Cancel Pressed"),
+            onPress: () => {},
             style: "cancel",
           },
           {
             text: "OK",
             onPress: async () => {
-              console.log("Okay Pressed!");
               const { isConnected } = await NetInfo.fetch();
               storedRiderID = await AsyncStorage.getItem("rider_id");
-              console.log("Rider ID -=-=>", storedRiderID);
               let urlMoveToHub = env.URL + env.api_movetohub;
-              console.log("Sending Data To:", urlMoveToHub);
               if (isConnected) {
                 try {
                   setRefreshing(true);
@@ -317,18 +288,14 @@ const YourTodayRidesScreen = (props) => {
                     "Request Timeout, Check Your Connection"
                   );
                   let responseJson = await response.json();
-                  console.log(responseJson);
                   refreshForDropOffPoint
                     ? setRefreshForDropOffPoint(false)
                     : setRefreshForDropOffPoint(true);
                   setRefreshing(false);
                 } catch (error) {
-                  console.log("--000--");
                   error = "Request Timeout, Check Your Connection"
                     ? alert("Request Timeout, Check Your Connection")
                     : alert("Server Error!");
-                  console.log(error);
-                  console.log("--001--");
                   setRefreshing(false);
                 }
               } else {

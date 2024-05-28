@@ -19,8 +19,6 @@ import { env } from "../env";
 import { useRoute } from "@react-navigation/native";
 import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
-const MAX_RETRIES = 3; // Maximum number of retries
-const RETRY_INTERVAL = 1000; // Retry interval in milliseconds
 
 async function fetchWithTimeout(url, options, timeout) {
     return new Promise(async (resolve, reject) => {
@@ -39,19 +37,7 @@ async function fetchWithTimeout(url, options, timeout) {
     });
 }
 
-async function fetchWithRetry(url, options, timeout, retries) {
-    for (let i = 0; i < retries; i++) {
-        try {
-            const response = await fetchWithTimeout(url, options, timeout);
-            return response;
-        } catch (error) {
-            if (i === retries - 1) {
-                throw error;
-            }
-            await new Promise(resolve => setTimeout(resolve, RETRY_INTERVAL));
-        }
-    }
-}
+
 const ConfirmOrderScreen = (props) => {
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -74,12 +60,11 @@ const ConfirmOrderScreen = (props) => {
   const [refreshing, setRefreshing] = useState(false);
   const [isDataSent, setIsDataSent] = useState(false);
   const [enableYes, setEnableYes] = useState(true);
-  //----------------------NOTIFICATION HOOKS AND FUNCTIONS ----------------------//
   const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState(false);
   const notificationListener = useRef();
   const responseListener = useRef();
-  const route = useRoute();
+
   useEffect(() => {
     registerForPushNotificationsAsync().then((token) =>
       setExpoPushToken(token)
@@ -99,6 +84,8 @@ const ConfirmOrderScreen = (props) => {
       Notifications.removeNotificationSubscription(responseListener);
     };
   }, []);
+
+
   async function schedulePushNotification() {
     await Notifications.scheduleNotificationAsync({
       content: {
@@ -140,12 +127,13 @@ const ConfirmOrderScreen = (props) => {
     }
     return token;
   }
-  //----------------------------------------------------------------------------------------//
   useEffect(() => {
     setIsDataSent(false);
     setEnableYes(true);
     setShowBottomContent(false);
   }, [order_id]);
+
+
   if (refreshing) {
     return (
       <View style={styles.container}>
@@ -159,7 +147,6 @@ const ConfirmOrderScreen = (props) => {
       </View>
     );
   }
-  //------------Functions Start Here---------------//
   const confirmFunc = async () => {
     let items_selected = [];
     for (let key in listData) {
@@ -190,7 +177,6 @@ const ConfirmOrderScreen = (props) => {
     let savedToken = await SecureStore.getItemAsync("token");
     
     savedToken = savedToken.substring(1, savedToken.length - 1);
-    console.log("Token --->", savedToken);
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     myHeaders.append("Authorization", `Bearer ${savedToken}`);
@@ -213,7 +199,7 @@ const ConfirmOrderScreen = (props) => {
       ],
       { cancelable: false }
     );
-    setRefreshing(true);
+    // setRefreshing(true);
     fetchWithTimeout(
       confirmURL,
       requestOptions,
@@ -277,6 +263,7 @@ const ConfirmOrderScreen = (props) => {
         console.log("--001--");
       });
   };
+
   async function fetchData() {
     const { isConnected } = await NetInfo.fetch();
     let storedRiderID = await AsyncStorage.getItem("rider_id");
@@ -381,12 +368,37 @@ const ConfirmOrderScreen = (props) => {
     }
   }
 
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert('Hold on!', 'Are you sure you want to go back?', [
+        {
+          text: 'Cancel',
+          onPress: () => null,
+          style: 'cancel',
+        },
+        {text: 'YES', onPress: async () => {
+          console.log("isDataaSentttt" , isDataSent)
+          if(isDataSent){
+            fetchnodata()
+          }else{
+            props.navigation.goBack()
+          }
+        }},
+      ]);
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, []);
 
 
 
-
-
-
+console.log("COnfirm Screeen me khara heee")
   
   //------------- FUNCTIONS END HERE -----------//
   if (refreshing) {

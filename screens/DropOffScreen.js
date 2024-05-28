@@ -24,45 +24,28 @@ import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
 import Header from "../components/Header";
 import { env } from "../env";
-const MAX_RETRIES = 3; // Maximum number of retries
-const RETRY_INTERVAL = 1000; // Retry interval in milliseconds
 
 async function fetchWithTimeout(url, options, timeout) {
-    return new Promise(async (resolve, reject) => {
-        const timeoutId = setTimeout(() => {
-            reject(new Error('Request Timeout'));
-        }, timeout);
+  return new Promise(async (resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      reject(new Error('Request Timeout'));
+    }, timeout);
 
-        try {
-            const response = await fetch(url, options);
-            clearTimeout(timeoutId);
-            resolve(response);
-        } catch (error) {
-            clearTimeout(timeoutId);
-            reject(error);
-        }
-    });
+    try {
+      const response = await fetch(url, options);
+      clearTimeout(timeoutId);
+      resolve(response);
+    } catch (error) {
+      clearTimeout(timeoutId);
+      reject(error);
+    }
+  });
 }
 
-async function fetchWithRetry(url, options, timeout, retries) {
-    for (let i = 0; i < retries; i++) {
-        try {
-            const response = await fetchWithTimeout(url, options, timeout);
-            return response;
-        } catch (error) {
-            if (i === retries - 1) {
-                throw error;
-            }
-            await new Promise(resolve => setTimeout(resolve, RETRY_INTERVAL));
-        }
-    }
-}const DropOffScreen = (props) => {
-  LogBox.ignoreLogs([
-    "Non-serializable values were found in the navigation state",
-  ]);
+const DropOffScreen = (props) => {
   const route = useRoute();
+  
   useEffect(() => {
-    console.log("DROP OFF -- BackHandler -- ", route);
     const backAction = () => {
       if (
         route.name === "Dashboard" ||
@@ -101,6 +84,10 @@ async function fetchWithRetry(url, options, timeout, retries) {
     );
     return () => backHandler.remove();
   }, []);
+
+
+
+
   const [refreshingStoredData, setRefreshingStoredData] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [receivedAmount, setReceivedAmount] = useState("");
@@ -109,6 +96,7 @@ async function fetchWithRetry(url, options, timeout, retries) {
   const [listData, setListData] = useState([]);
   const [paymentSent, setPaymentSent] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  
   //----------------------NOTIFICATION HOOKS AND FUNCTIONS ----------------------//
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -123,12 +111,8 @@ async function fetchWithRetry(url, options, timeout, retries) {
   const responseListener = useRef();
 
   const onRefresh = useCallback(() => {
-    try {
       fetchData();
-    } catch (e) {
-      console.log(e);
-    }
-  }, [refreshing]);
+  }, []);
 
   useEffect(() => {
     registerForPushNotificationsAsync().then((token) =>
@@ -141,7 +125,6 @@ async function fetchWithRetry(url, options, timeout, retries) {
     );
     responseListener.current = Notifications.addNotificationResponseReceivedListener(
       (response) => {
-        console.log(response);
       }
     );
     return () => {
@@ -176,7 +159,6 @@ async function fetchWithRetry(url, options, timeout, retries) {
         return;
       }
       token = (await Notifications.getExpoPushTokenAsync()).data;
-      console.log(token);
     } else {
       alert("Must use physical device for Push Notifications");
     }
@@ -192,25 +174,25 @@ async function fetchWithRetry(url, options, timeout, retries) {
     return token;
   }
   //----------------------------------------------------------------------------------------//
-  const screenTitle = props.route.params.screenTitle;
-  const screenType = props.route.params.screenType;
-  const orderID = props.route.params.orderID;
-  const customerID = props.route.params.customerID;
+  const screenTitle = props?.route?.params?.screenTitle;
+  const screenType = props?.route?.params?.screenType;
+  const orderID = props?.route?.params?.orderID;
+  const customerID = props?.route?.params?.customerID;
   let storedEmail;
   //These variables are for changing color for main heading of QR SCAN
   let countQRScans = 0;
   let QRScanHeading;
   let initialURL;
-  console.log(screenTitle);
+
   useEffect(() => {
     try {
       setAllQRscanned(false);
       fetchData();
     } catch (error) {
       Alert.alert(error);
-      console.log(error);
     }
   }, [screenTitle, orderID]);
+
   useEffect(() => {
     LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
   }, [screenTitle]);
@@ -237,7 +219,7 @@ async function fetchWithRetry(url, options, timeout, retries) {
   }
   //------------Functions Start Here---------------//
 
-  async function fetchData() { 
+  async function fetchData() {
     //This is only in dropoff because this screen is also used in Pick&Drop
     setPaymentSent(false);
     setReceivedAmount("");
@@ -246,9 +228,7 @@ async function fetchWithRetry(url, options, timeout, retries) {
       ? (initialURL = env.URL + env.api_dropoff)
       : (initialURL = env.URL + env.api_pickdrop);
     storedRiderID = await AsyncStorage.getItem("rider_id");
-    console.log("Rider ID -=-=>", storedRiderID);
     const finalURL = initialURL + `/${storedRiderID}/${orderID}`;
-    console.log("Fetching Data From:", finalURL);
     let response;
     let responseJson;
     if (isConnected) {
@@ -256,7 +236,6 @@ async function fetchWithRetry(url, options, timeout, retries) {
         try {
           let savedToken = await SecureStore.getItemAsync("token");
           savedToken = savedToken.substring(1, savedToken.length - 1);
-          console.log("Token --> ", savedToken, typeof savedToken);
           let myHeaders = new Headers();
           myHeaders.append("Accept", "application/json");
           myHeaders.append("Authorization", `Bearer ${savedToken}`);
@@ -273,10 +252,8 @@ async function fetchWithRetry(url, options, timeout, retries) {
             "Request Timeout, Check Your Connection"
           );
           responseJson = await response.json();
-          console.log(responseJson);
           setRefreshing(false);
         } catch (e) {
-          console.log(e);
           alert("Server Error!");
           setRefreshing(false);
         }
@@ -286,12 +263,9 @@ async function fetchWithRetry(url, options, timeout, retries) {
           responseJson.polybag_items[key]["polybag_qr"] = null;
         }
       } catch (error) {
-        console.log("--000--");
         error = "Request Timeout, Check Your Connection"
           ? alert("Request Timeout, Check Your Connection")
           : alert("Server Error!");
-        console.log(error);
-        console.log("--001--");
         setRefreshing(false);
       }
     } else {
@@ -302,7 +276,6 @@ async function fetchWithRetry(url, options, timeout, retries) {
     let addAnotherOrderURL =
       env.URL + env.api_addanotherorder + `/${storedRiderID}/${customerID}`;
     const { isConnected } = await NetInfo.fetch();
-    console.log("Fetching Data From:", addAnotherOrderURL);
     let savedToken = await SecureStore.getItemAsync("token");
     savedToken = savedToken.substring(1, savedToken.length - 1);
     const myHeaders = new Headers();
@@ -323,7 +296,6 @@ async function fetchWithRetry(url, options, timeout, retries) {
           "Request Timeout, Check Your Connection"
         );
         response = await response.json();
-        console.log(response);
         setRefreshing(false);
         props.navigation.navigate("Pickup", {
           pickdropdata: response,
@@ -332,12 +304,9 @@ async function fetchWithRetry(url, options, timeout, retries) {
         });
       } catch (error) {
         setRefreshing(false);
-        console.log("--000--");
         error = "Request Timeout, Check Your Connection"
           ? alert("Request Timeout, Check Your Connection")
           : alert("Server Error!");
-        console.log(error);
-        console.log("--001--");
       }
     } else {
       setRefreshing(false);
@@ -352,7 +321,6 @@ async function fetchWithRetry(url, options, timeout, retries) {
       return;
     }
     storedRiderID = await AsyncStorage.getItem("rider_id");
-    // console.log("Rider ID -=-=>",storedRiderID)
     const sendDataObj = {
       order_id: orderID,
       rider_id: storedRiderID,
@@ -361,14 +329,12 @@ async function fetchWithRetry(url, options, timeout, retries) {
     };
     // Sending Data
     const paymentURL = env.URL + env.api_payment;
-    console.log("Sending Data To: ", paymentURL);
     let savedToken = await SecureStore.getItemAsync("token");
     savedToken = savedToken.substring(1, savedToken.length - 1);
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     myHeaders.append("Authorization", `Bearer ${savedToken}`);
     var raw = JSON.stringify(sendDataObj);
-    console.log(raw);
     const requestOptions = {
       method: "POST",
       headers: myHeaders,
@@ -381,7 +347,7 @@ async function fetchWithRetry(url, options, timeout, retries) {
       [
         {
           // text: "Cancel",
-          // onPress: () => console.log("Cancel Pressed"),
+          // onPress: () => {},
           // style: "cancel"
         },
       ],
@@ -397,24 +363,16 @@ async function fetchWithRetry(url, options, timeout, retries) {
       .then((response) => response.text())
       .then((result) => {
         let paymentResponse;
-        console.log("--1");
-        console.log(result, typeof result);
         if (typeof result === "string") {
-          console.log("--2");
           paymentResponse = JSON.parse(result.toString());
-          console.log("--3");
         } else {
-          console.log("--4");
           paymentResponse = result;
-          console.log("--5");
         }
-        console.log(paymentResponse, typeof paymentResponse);
         if (paymentResponse.status === "success" && !paymentResponse.data) {
           alert("Data Sent!");
           schedulePushNotification();
           setPaymentSent(true);
           setRefreshing(false);
-          console.log(paymentResponse);
         } else if (
           paymentResponse.status === "success" &&
           paymentResponse.data.original
@@ -422,32 +380,28 @@ async function fetchWithRetry(url, options, timeout, retries) {
           alert("Data Sent!");
           setRefreshing(false);
           schedulePushNotification();
-          // console.log(paymentResponse)
           navigate("Pickup", {
             pickdropdata: paymentResponse.data.original,
             screenTitle: paymentResponse.data.original.title,
             orderID: paymentResponse.data.original.order_id,
           });
-        } else if(paymentResponse.status === 'failed'){
+        } else if (paymentResponse.status === 'failed') {
           alert(paymentResponse.error);
           setRefreshing(false);
           navigate("My Rides", {
             order_completed: orderID,
           })
         }
-        
+
         else {
           Alert.alert("Server Error! Data Not Sent!!");
           setRefreshing(false);
         }
       })
       .catch((error) => {
-        console.log("--000--");
         error = "Request Timeout, Check Your Connection"
           ? alert("Request Timeout, Check Your Connection")
           : alert("Server Error!");
-        console.log(error);
-        console.log("--001--");
         setRefreshing(false);
       });
   };
@@ -476,12 +430,9 @@ async function fetchWithRetry(url, options, timeout, retries) {
       item.polybag_qr = qrData;
       //For loop is necessary because it verifies scanning of every qr scan.
       for (let key in listData.polybag_items) {
-        console.log(listData.polybag_items[key]["polybag_qr"]);
         listData.polybag_items[key]["polybag_qr"] ? (countQRScans += 1) : null;
       }
-      console.log("-->", countQRScans);
       if (countQRScans === parseInt(listData.polybag)) {
-        console.log("All Polybags have been scanned!");
         QRScanHeading = [styles.TapableBox, styles.ScanTapperGreen];
         setAllQRscanned(true);
       }
@@ -505,9 +456,9 @@ async function fetchWithRetry(url, options, timeout, retries) {
             onPress={() => {
               !item.polybag_qr
                 ? props.navigation.navigate("QR Code", {
-                    itemData: item,
-                    scanQRFunc: scanQRFunc,
-                  })
+                  itemData: item,
+                  scanQRFunc: scanQRFunc,
+                })
                 : null;
             }}
           >
@@ -518,7 +469,6 @@ async function fetchWithRetry(url, options, timeout, retries) {
     );
   };
   const renderItem = ({ item }) => {
-    // console.log(item)
     return (
       <Item
         item={item}
@@ -608,9 +558,9 @@ async function fetchWithRetry(url, options, timeout, retries) {
               style={
                 allQRscanned
                   ? (QRScanHeading = [
-                      styles.TapableBox,
-                      styles.ScanTapperGreen,
-                    ])
+                    styles.TapableBox,
+                    styles.ScanTapperGreen,
+                  ])
                   : (QRScanHeading = [styles.TapableBox])
               }
             >
@@ -691,9 +641,9 @@ async function fetchWithRetry(url, options, timeout, retries) {
               style={
                 allQRscanned
                   ? (QRScanHeading = [
-                      styles.TapableBox,
-                      styles.ScanTapperGreen,
-                    ])
+                    styles.TapableBox,
+                    styles.ScanTapperGreen,
+                  ])
                   : (QRScanHeading = [styles.TapableBox])
               }
               onPress={paymentFunc(receivedAmount, props.navigation.navigate)}
@@ -708,7 +658,7 @@ async function fetchWithRetry(url, options, timeout, retries) {
                   rider_id: storedEmail,
                   order_id: orderID,
                   screenTitle: screenTitle,
-                  recentOrders: props.route.params.recentOrders,
+                  recentOrders: props?.route?.params?.recentOrders,
                 });
               }}
             >
@@ -755,6 +705,8 @@ async function fetchWithRetry(url, options, timeout, retries) {
     </View>
   );
 };
+
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

@@ -108,17 +108,14 @@ async function fetchWithRetry(url, options, timeout, retries) {
       inputItemValue.current = "";
     } catch (error) {
       Alert.alert("Error");
-      console.log(error);
     }
   }, [URL]);
   // useEffect(() => {
   //   const unsubscribe = props.navigation.addListener("focus", () => {
-  //     console.log("unsubscribe 1");
   //     handleSearch("asdfasdfasdfasdfasdfasdfasdf ");
   //     handleSearch("");
   //     setSelectedItem("Item Name");
   //     inputItemValue.current = "";
-  //     console.log("unsubscribe 2");
   //     setListData(listData);
   //   });
   //   return unsubscribe;
@@ -137,20 +134,16 @@ async function fetchWithRetry(url, options, timeout, retries) {
     );
   }
 
-  // console.log("Keyboard--->", isKeyboardVisible, inputQuantity);
   //--------------------FUNCTIONS START------------------//
   async function fetchData() {
     const { isConnected } = await NetInfo.fetch();
     storedRiderID = await AsyncStorage.getItem("rider_id");
-    console.log("Rider ID -=-=>", storedRiderID);
     const finalURL = URL;
-    console.log("Fetching Data From:", finalURL);
     if (isConnected) {
       try {
         setRefreshing(true);
         savedToken = await SecureStore.getItemAsync("token");
         savedToken = savedToken.substring(1, savedToken.length - 1);
-        console.log("Token --> ", savedToken, typeof savedToken);
         let myHeaders = new Headers();
         myHeaders.append("Accept", "application/json");
         myHeaders.append("Authorization", `Bearer ${savedToken}`);
@@ -180,12 +173,9 @@ async function fetchWithRetry(url, options, timeout, retries) {
           ? setWeight("")
           : setWeight(responsePickup.weight.toString());
       } catch (error) {
-        console.log("--000--");
         error = "Request Timeout, Check Your Connection"
           ? alert("Request Timeout, Check Your Connection")
           : alert("Server Error!");
-        console.log(error);
-        console.log("--001--");
         setRefreshing(false);
       }
     } else {
@@ -194,7 +184,6 @@ async function fetchWithRetry(url, options, timeout, retries) {
   }
   const handleChange = (quantity, id, serialNo, title) => {
     id = inputItemValue.current.id;
-    console.log("HANDLE CHANGE: ", id, quantity);
     for (let key in listData) {
       if (id === listData[key]["id"]) {
         if (!quantity) {
@@ -224,7 +213,6 @@ async function fetchWithRetry(url, options, timeout, retries) {
     return false;
   };
   const handleWeight = (weightText) => {
-    console.log(weightText);
     setWeight(weightText);
   };
 
@@ -251,11 +239,12 @@ async function fetchWithRetry(url, options, timeout, retries) {
       if (listData[key]["quantity"] > 0) {
         items_selected.push(listData[key]);
       } else {
-        emptyPieces = true
-
+        if (listData[key]['title'] === selectedItem) {
+          emptyPieces = true
+        }
       }
     }
-    if (emptyPieces == 0) {
+    if (emptyPieces) {
       Alert.alert("Incorrect Pieces", "Pieces must be greater than 0");
       return;
     }
@@ -266,79 +255,68 @@ async function fetchWithRetry(url, options, timeout, retries) {
       items_selected: items_selected,
       weight: weight,
     };
-    console.log(sendDataObj, "sendDataObj");
-    // const confirmURL = env.URL + env.api_confirmpickupservice;
-    // savedToken = await SecureStore.getItemAsync("token");
-    // savedToken = savedToken.substring(1, savedToken.length - 1);
-    // const myHeaders = new Headers();
-    // myHeaders.append("Content-Type", "application/json");
-    // myHeaders.append("Authorization", `Bearer ${savedToken}`);
-    // var raw = JSON.stringify(sendDataObj);
-    // const requestOptions = {
-    //   method: "POST",
-    //   headers: myHeaders,
-    //   body: raw,
-    //   redirect: "follow",
-    // };
-    // alert("Sending Data, Please Wait!");
-    // console.log("Sending Data To: ", confirmURL);
-    // console.log(raw);
-    // console.log("Token --->", savedToken);
-    // setRefreshing(true);
-    // fetchWithTimeout(
-    //   confirmURL,
-    //   requestOptions,
-    //   10000,
-    //   "Request Timeout, Check Your Connection"
-    // )
-    //   .then((response) => response.text())
-    //   .then((result) => {
-    //     console.log(result, typeof result);
-    //     result = JSON.parse(result);
-    //     console.log(result, typeof result);
-    //     if (result.status === "success") {
-    //       let totalQuantity = 0;
-    //       // ---------- Summing up total items for notification! ------------ //
-    //       for (let key in listData) {
-    //         console.log(
-    //           "---->",
-    //           listData[key]["quantity"],
-    //           typeof listData[key]["quantity"],
-    //           totalQuantity,
-    //           typeof totalQuantity
-    //         );
-    //         if (listData[key]["quantity"] > 0) {
-    //           totalQuantity = totalQuantity + listData[key]["quantity"];
-    //           console.log("===>", totalQuantity);
-    //         }
-    //       }
-    //       Alert.alert(
-    //         `${props.route.params.screenHeader}`,
-    //         `Body: ${totalQuantity} Items, Weight: ${weight}`
-    //       );
-    //       PickupInternalScreenUpdated
-    //         ? setPickupInternalScreenUpdated(false)
-    //         : setPickupInternalScreenUpdated(true);
-    //         props.navigation.navigate("Pickup", {
-    //           orderID: order_id,
+    const confirmURL = env.URL + env.api_confirmpickupservice;
+    savedToken = await SecureStore.getItemAsync("token");
+    savedToken = savedToken.substring(1, savedToken.length - 1);
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    myHeaders.append("Authorization", `Bearer ${savedToken}`);
+    var raw = JSON.stringify(sendDataObj);
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+      redirect: "follow",
+    };
+    setRefreshing(true);
+    fetchWithTimeout(
+      confirmURL,
+      requestOptions,
+      10000,
+      "Request Timeout, Check Your Connection"
+    )
+      .then((response) => response.text())
+      .then((result) => {
+        result = JSON.parse(result);
+        if (result.status === "success") {
+          let totalQuantity = 0;
+          // ---------- Summing up total items for notification! ------------ //
+          for (let key in listData) {
+            console.log(
+              "---->",
+              listData[key]["quantity"],
+              typeof listData[key]["quantity"],
+              totalQuantity,
+              typeof totalQuantity
+            );
+            if (listData[key]["quantity"] > 0) {
+              totalQuantity = totalQuantity + listData[key]["quantity"];
+            }
+          }
+          Alert.alert(
+            `${props.route.params.screenHeader}`,
+            `Body: ${totalQuantity} Items, Weight: ${weight}`
+          );
+          PickupInternalScreenUpdated
+            ? setPickupInternalScreenUpdated(false)
+            : setPickupInternalScreenUpdated(true);
+          props.navigation.navigate("Pickup", {
+            orderID: order_id,
 
 
-    //         }),
-    //       setRefreshing(true);
-    //     } else {
-    //       Alert.alert("Server Error! Data Not Sent!");
-    //       setRefreshing(false);
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.log("--000--");
-    //     error = "Request Timeout, Check Your Connection"
-    //       ? alert("Request Timeout, Check Your Connection")
-    //       : alert("Server Error!");
-    //     console.log(error);
-    //     console.log("--001--");
-    //     setRefreshing(false);
-    //   });
+          }),
+            setRefreshing(true);
+        } else {
+          Alert.alert("Server Error! Data Not Sent!");
+          setRefreshing(false);
+        }
+      })
+      .catch((error) => {
+        error = "Request Timeout, Check Your Connection"
+          ? alert("Request Timeout, Check Your Connection")
+          : alert("Server Error!");
+        setRefreshing(false);
+      });
   };
 
   //--------------------FUNCTIONS END------------------//
@@ -376,7 +354,6 @@ async function fetchWithRetry(url, options, timeout, retries) {
       <TouchableOpacity
         style={itemRowStyle}
         onPress={() => {
-          console.log(item);
           inputItemValue.current = item;
           inputItem.current.focus();
         }}
@@ -391,12 +368,11 @@ async function fetchWithRetry(url, options, timeout, retries) {
       </TouchableOpacity>
     );
   };
-
   const deleteSearchItem = () => {
-    console.log("hi~");
     setQuery("");
     setListData(listData2);
   };
+
   return (
     <View style={styles.container}>
       <Header
@@ -448,8 +424,8 @@ async function fetchWithRetry(url, options, timeout, retries) {
               // selectTextOnFocus={!selectedItem === "Item Name" ? true : false}
               onChangeText={(quantity) => handleChange(quantity)}
               onSubmitEditing={() => handleSubmit()}
-              onPressOut={() => console.log("PRESS OUT")}
-              onPressIn={() => console.log("PRESS IN")}
+              onPressOut={() => {}}
+              onPressIn={() => {}}
               onFocus={() => {
                 setShowBottomSection(false);
                 inputItemValue.current.title
