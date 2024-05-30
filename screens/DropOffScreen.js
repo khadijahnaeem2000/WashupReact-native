@@ -44,7 +44,7 @@ async function fetchWithTimeout(url, options, timeout) {
 
 const DropOffScreen = (props) => {
   const route = useRoute();
-  
+
   useEffect(() => {
     const backAction = () => {
       if (
@@ -94,7 +94,7 @@ const DropOffScreen = (props) => {
   const [listData, setListData] = useState([]);
   const [paymentSent, setPaymentSent] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  
+
   //----------------------NOTIFICATION HOOKS AND FUNCTIONS ----------------------//
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -109,7 +109,7 @@ const DropOffScreen = (props) => {
   const responseListener = useRef();
 
   const onRefresh = useCallback(() => {
-      fetchData();
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -183,10 +183,9 @@ const DropOffScreen = (props) => {
   let initialURL;
 
   useEffect(() => {
-    console.log("useEffect me ayyayayayay")
-      setAllQRscanned(false);
-      fetchData();
-  }, []);
+    setAllQRscanned(false);
+    fetchData();
+  }, [screenTitle, orderID]);
 
 
   if (isNaN(receivedAmount)) {
@@ -452,11 +451,6 @@ const DropOffScreen = (props) => {
                 ? props.navigation.navigate("QR Code", {
                   itemData: item,
                   scanQRFunc: scanQRFunc,
-                  screenTitle: screenTitle,
-                  screenType: "Drop Off",
-                  orderID: orderID,
-                  customerID: customerID,
-                  recentOrders: false,
                 })
                 : null;
             }}

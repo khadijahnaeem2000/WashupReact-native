@@ -65,14 +65,7 @@ const QRCodeScreen = props => {
           },
           {
             text: "OK", onPress: () => {
-              props.navigation.navigate("Drop Off", {
-                screenTitle: props?.route?.params?.screenTitle,
-                screenType: "Drop Off",
-                orderID: props?.route?.params?.orderID,
-                customerID: props?.route?.params?.customerID,
-                recentOrders: false,
-              })
-              // props.navigation.goBack()
+              props.navigation.goBack()
             }
           }
         ],

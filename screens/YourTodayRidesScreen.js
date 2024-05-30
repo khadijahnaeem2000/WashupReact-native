@@ -155,11 +155,13 @@ const YourTodayRidesScreen = (props) => {
       //   recentOrders: false,
       // });
       props_navigation.navigate("Drop Off", {
-        screenTitle: screenTitle,
-        screenType: "Drop Off",
-        orderID: item.order_id.toString(),
-        customerID: item.customer_id,
-        recentOrders: false,
+        screen: "DropOffScreen", params: {
+          screenTitle: screenTitle,
+          screenType: "Drop Off",
+          orderID: item.order_id.toString(),
+          customerID: item.customer_id,
+          recentOrders: false,
+        }
       });
     } else if (props_screen === "Pickup") {
       props_navigation.navigate("Pickup", {
@@ -173,10 +175,12 @@ const YourTodayRidesScreen = (props) => {
       });
     } else if (props_screen === "Pick & Drop") {
       props_navigation.navigate("Drop Off", {
-        screenTitle: screenTitle,
-        screenType: "Pick & Drop",
-        orderID: item.order_id.toString(),
-        recentOrders: false,
+        screen: "DropOffScreen", params: {
+          screenTitle: screenTitle,
+          screenType: "Pick & Drop",
+          orderID: item.order_id.toString(),
+          recentOrders: false,
+        }
       });
     } else if (props_screen === "To Be Packed") {
     }
@@ -239,7 +243,7 @@ const YourTodayRidesScreen = (props) => {
         [
           {
             text: "Cancel",
-            onPress: () => {},
+            onPress: () => { },
             style: "cancel",
           },
           {

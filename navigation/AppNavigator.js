@@ -27,6 +27,7 @@ import NetInfo from "@react-native-community/netinfo";
 import * as authActions from "../store/actions/auth";
 import { useSelector, useDispatch } from "react-redux";
 import { env } from "../env";
+import DropOffStack from "./DropOffStack";
 
 async function fetchWithTimeout(url, options, timeout) {
     return new Promise(async (resolve, reject) => {
@@ -314,7 +315,7 @@ const AppNavigator = () => {
         />
         <Drawer.Screen
           name="Drop Off"
-          component={DropOffScreen}
+          component={DropOffStack}
           options={{
             drawerIcon: ({ focused, size }) => (
               <Icon
@@ -326,7 +327,7 @@ const AppNavigator = () => {
             ),
           }}
         />
-        <Drawer.Screen
+        {/* <Drawer.Screen
           name="QR Code"
           component={QRCodeScreen}
           icon={({ focused, color, size }) => (
@@ -336,7 +337,7 @@ const AppNavigator = () => {
               name={focused ? "heart" : "heart-outline"}
             />
           )}
-        />
+        /> */}
         <Drawer.Screen
           name="PickupInternalAddonsScreen"
           component={PickupInternalAddonsScreen}

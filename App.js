@@ -75,6 +75,7 @@ import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import authReducer from './store/reducers/auth';
 import washupReducer from './store/reducers/washup';
+import DropOffStack from './navigation/DropOffStack';
 
 // Combine reducers
 const rootReducer = combineReducers({
