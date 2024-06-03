@@ -86,9 +86,7 @@ const OrdersPayment = (props) => {
   async function fetchData() {
     const { isConnected } = await NetInfo.fetch();
     storedRiderID = await AsyncStorage.getItem("rider_id");
-    console.log("Rider ID -=-=>", storedRiderID);
     let finalURL = URL + `/${storedRiderID}/`;
-    console.log("Fetching Data From:", finalURL);
     if (isConnected) {
       try {
         setRefreshing(true);
@@ -110,8 +108,6 @@ const OrdersPayment = (props) => {
         );
         setRefreshing(false);
         let responseJson = await response.json();
-        // console.log(responseJson);
-        console.log("Shameel---1", responseJson);
 
         if (responseJson.regular_order.length === 0) {
           setRegularOrder(regularOrderObj);
@@ -128,12 +124,9 @@ const OrdersPayment = (props) => {
         // setPaymentOrder(responseJson.payment_only_rides);
         setTotalAmount(responseJson.total_amount);
       } catch (error) {
-        console.log("--000--");
         error = "Request Timeout, Check Your Connection"
           ? alert("Request Timeout, Check Your Connection")
           : alert("Server Error!");
-        console.log(error);
-        console.log("--001--");
       }
     } else {
       Alert.alert("Internet Error!");

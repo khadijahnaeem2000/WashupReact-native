@@ -21,20 +21,20 @@ import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
 
 async function fetchWithTimeout(url, options, timeout) {
-    return new Promise(async (resolve, reject) => {
-        const timeoutId = setTimeout(() => {
-            reject(new Error('Request Timeout'));
-        }, timeout);
+  return new Promise(async (resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      reject(new Error('Request Timeout'));
+    }, timeout);
 
-        try {
-            const response = await fetch(url, options);
-            clearTimeout(timeoutId);
-            resolve(response);
-        } catch (error) {
-            clearTimeout(timeoutId);
-            reject(error);
-        }
-    });
+    try {
+      const response = await fetch(url, options);
+      clearTimeout(timeoutId);
+      resolve(response);
+    } catch (error) {
+      clearTimeout(timeoutId);
+      reject(error);
+    }
+  });
 }
 
 
@@ -150,32 +150,30 @@ const ConfirmOrderScreen = (props) => {
   const confirmFunc = async () => {
     let items_selected = [];
     for (let key in listData) {
-      // console.log("--8")
       if (listData[key]["quantity"] > 0) {
-        // console.log(listData[key])
         items_selected.push(listData[key]);
       }
     }
     let sendDataObj;
     isUserNew
       ? (sendDataObj = {
-          rider_id: rider_id,
-          order_id: order_id,
-          order_note: order_note,
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-          address_id: addressID,
-        })
+        rider_id: rider_id,
+        order_id: order_id,
+        order_note: order_note,
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        address_id: addressID,
+      })
       : (sendDataObj = {
-          rider_id: rider_id,
-          order_id: order_id,
-          order_note: order_note,
-        });
+        rider_id: rider_id,
+        order_id: order_id,
+        order_note: order_note,
+      });
     console.log(sendDataObj);
     const confirmURL = env.URL + env.api_confirmpickup;
     console.log("Sending Data To: ", confirmURL);
     let savedToken = await SecureStore.getItemAsync("token");
-    
+
     savedToken = savedToken.substring(1, savedToken.length - 1);
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
@@ -199,7 +197,6 @@ const ConfirmOrderScreen = (props) => {
       ],
       { cancelable: false }
     );
-    // setRefreshing(true);
     fetchWithTimeout(
       confirmURL,
       requestOptions,
@@ -208,29 +205,21 @@ const ConfirmOrderScreen = (props) => {
     )
       .then((response) => response.text())
       .then((result) => {
-        console.log("---123");
         console.log(result, typeof result);
 
         if (typeof result === "string") {
-          console.log("--1", result);
           confirmResponse = JSON.parse(result);
-          console.log("--11", confirmResponse);
         } else {
           confirmResponse = result;
-          console.log("--2", confirmResponse);
         }
-        console.log(confirmResponse);
         if (confirmResponse.status === "success") {
-          console.log("Data Sent Successfuly!")
-          console.log("data is here order is here ",order_id)
-
           alert("Data Sent!");
           schedulePushNotification();
           setIsDataSent(true);
           setEnableYes(false);
           setRefreshing(false);
           props.route.params.setOrderNote("");
-        }else if(confirmResponse.status === 'failed'){
+        } else if (confirmResponse.status === 'failed') {
           alert(confirmResponse.error);
           schedulePushNotification();
           setIsDataSent(true);
@@ -242,12 +231,11 @@ const ConfirmOrderScreen = (props) => {
               order_completed: order_id,
             });
           } else {
-            console.log("data is here order is here",order_id)
             props.navigation.navigate("My Rides", {
               order_completed: order_id,
             });
           }
-        } 
+        }
         else {
           Alert.alert("Server Error! Data Not Sent!");
           setRefreshing(false);
@@ -255,12 +243,9 @@ const ConfirmOrderScreen = (props) => {
       })
       .catch((error) => {
         setRefreshing(false);
-        console.log("--000--");
         error = "Request Timeout, Check Your Connection"
           ? alert("Request Timeout, Check Your Connection")
           : alert("Server Error!");
-        console.log(error);
-        console.log("--001--");
       });
   };
 
@@ -283,16 +268,15 @@ const ConfirmOrderScreen = (props) => {
     console.log("Token --->", savedToken);
     if (isConnected) {
       try {
-        setRefreshing(true);
+        // setRefreshing(true);
         let response = await fetchWithTimeout(
           addAnotherOrderURL,
           requestOptions,
           10000,
           "Request Timeout, Check Your Connection"
         );
-        response = await response.json();
-        console.log(response);
-        setEnableYes(false);
+        response = await response?.json();
+        // setEnableYes(false);
         props.navigation.navigate("Pickup", {
           pickdropdata: response,
           screenTitle: response.title,
@@ -300,11 +284,7 @@ const ConfirmOrderScreen = (props) => {
         });
         setRefreshing(false);
       } catch (error) {
-        error = "Request Timeout, Check Your Connection"
-          ? alert("Request Timeout, Check Your Connection")
-          : alert("Server Error!");
-        console.log(error);
-        console.log("--001--");
+        console.log(error?.data);
         setRefreshing(false);
       }
     } else {
@@ -328,11 +308,8 @@ const ConfirmOrderScreen = (props) => {
     };
     let addAnotherOrderURL =
       env.URL + env.api_ordercancel + `/${order_id}/${rider_id}`;
-    console.log("Fetching Data From:", addAnotherOrderURL);
-    console.log("Token --->", savedToken);
     if (isConnected) {
       try {
-        setRefreshing(true);
         let response = await fetchWithTimeout(
           addAnotherOrderURL,
           requestOptions,
@@ -340,7 +317,6 @@ const ConfirmOrderScreen = (props) => {
           "Request Timeout, Check Your Connection"
         );
         response = await response.json();
-        console.log(response);
         setEnableYes(false);
         Alert.alert(
           "Success",
@@ -358,8 +334,6 @@ const ConfirmOrderScreen = (props) => {
         error = "Request Timeout, Check Your Connection"
           ? alert("Request Timeout, Check Your Connection")
           : alert("Server Error!");
-        console.log(error);
-        console.log("--001--");
         setRefreshing(false);
       }
     } else {
@@ -376,14 +350,16 @@ const ConfirmOrderScreen = (props) => {
           onPress: () => null,
           style: 'cancel',
         },
-        {text: 'YES', onPress: async () => {
-          console.log("isDataaSentttt" , isDataSent)
-          if(isDataSent){
-            fetchnodata()
-          }else{
-            props.navigation.goBack()
+        {
+          text: 'YES', onPress: async () => {
+            console.log("isDataaSentttt", isDataSent)
+            if (isDataSent) {
+              fetchnodata()
+            } else {
+              props.navigation.goBack()
+            }
           }
-        }},
+        },
       ]);
       return true;
     };
@@ -396,25 +372,6 @@ const ConfirmOrderScreen = (props) => {
     return () => backHandler.remove();
   }, []);
 
-
-
-console.log("COnfirm Screeen me khara heee")
-  
-  //------------- FUNCTIONS END HERE -----------//
-  if (refreshing) {
-    return (
-      <View style={styles.container}>
-        <Header
-          toggleDrawer={props.navigation.toggleDrawer}
-          screenName={props.route.params.screenHeader}
-          // backButton={props.navigation.goBack}
-        />
-        <View style={styles.mainView}>
-          <ActivityIndicator size="large" color="#0c76e6" />
-        </View>
-      </View>
-    );
-  }
   return (
     <View style={styles.container}>
       <Header
@@ -477,22 +434,22 @@ console.log("COnfirm Screeen me khara heee")
                 ]}
                 onPress={fetchnodata}
 
-                // onPress={() => {
-                //   senddatano
+              // onPress={() => {
+              //   senddatano
 
-                //   if (recentOrders) {
-                //   //   props.navigation.navigate("Recent Orders", {
-                //   //     order_completed: order_id,
-                //   //   });
-                //   // } else {
-                //   //   props.navigation.navigate("My Rides", {
-                //   //     order_completed: order_id,
-                //   //   });
-                  
-                //   }
-                // }}
+              //   if (recentOrders) {
+              //   //   props.navigation.navigate("Recent Orders", {
+              //   //     order_completed: order_id,
+              //   //   });
+              //   // } else {
+              //   //   props.navigation.navigate("My Rides", {
+              //   //     order_completed: order_id,
+              //   //   });
+
+              //   }
+              // }}
               >
-                
+
                 <Text style={{ color: "white" }}>No</Text>
               </TouchableOpacity>
             </View>

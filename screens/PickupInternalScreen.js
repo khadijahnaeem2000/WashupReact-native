@@ -38,7 +38,7 @@ async function fetchWithTimeout(url, options, timeout) {
 
 const PickupInternalScreen = (props) => {
   let responsePickup;
-  const URL = env.URL + props.route.params.apiPath;
+  const URL = env.URL + props?.route?.params?.apiPath;
   const order_id = props.route.params.order_id;
   const service_id = props.route.params.service_id;
   const rider_id = props.route.params.rider_id;
@@ -84,42 +84,6 @@ const PickupInternalScreen = (props) => {
     };
   }, []);
 
-  useEffect(() => {
-    try {
-      setWeight(""); //clears the weight value for different screen!
-      setCurrentItemNote("");
-      setQuery("");
-      fetchData();
-      setSelectedItem("Item Name");
-      inputItemValue.current = "";
-    } catch (error) {
-      Alert.alert("Error");
-    }
-  }, [URL]);
-  // useEffect(() => {
-  //   const unsubscribe = props.navigation.addListener("focus", () => {
-  //     handleSearch("asdfasdfasdfasdfasdfasdfasdf ");
-  //     handleSearch("");
-  //     setSelectedItem("Item Name");
-  //     inputItemValue.current = "";
-  //     setListData(listData);
-  //   });
-  //   return unsubscribe;
-  // }, [props.navigation]);
-  if (refreshing) {
-    return (
-      <View style={styles.container}>
-        <Header
-          toggleDrawer={props.navigation.toggleDrawer}
-          screenName={props.route.params.screenHeader}
-        />
-        <View style={styles.mainView}>
-          <ActivityIndicator size="large" color="#0c76e6" />
-        </View>
-      </View>
-    );
-  }
-
   //--------------------FUNCTIONS START------------------//
   async function fetchData() {
     const { isConnected } = await NetInfo.fetch();
@@ -144,6 +108,7 @@ const PickupInternalScreen = (props) => {
           10000,
           "Request Timeout, Check Your Connection"
         );
+        console.log("responseeee" , response)
         setRefreshing(false);
         responsePickup = await response.json();
         for (let key in responsePickup.items) {
@@ -152,22 +117,63 @@ const PickupInternalScreen = (props) => {
             responsePickup.items[key]["quantity"]
           );
         }
-        setListData(responsePickup.items);
-        setListData2(responsePickup.items);
-        setFullData(responsePickup.items);
+        setListData(responsePickup?.items);
+        setListData2(responsePickup?.items);
+        setFullData(responsePickup?.items);
         responsePickup.weight == 0
           ? setWeight("")
           : setWeight(responsePickup.weight.toString());
       } catch (error) {
+        console.log("erorrrrrrr" , error)
         error = "Request Timeout, Check Your Connection"
           ? alert("Request Timeout, Check Your Connection")
           : alert("Server Error!");
         setRefreshing(false);
       }
     } else {
+
       Alert.alert("Internet Error!");
     }
   }
+
+
+  useEffect(() => {
+    try {
+      setWeight(""); //clears the weight value for different screen!
+      setCurrentItemNote("");
+      setQuery("");
+      fetchData();
+      setSelectedItem("Item Name");
+      inputItemValue.current = "";
+    } catch (error) {
+      Alert.alert("Error");
+    }
+  }, [URL , props?.route?.params]);
+  // useEffect(() => {
+  //   const unsubscribe = props.navigation.addListener("focus", () => {
+  //     handleSearch("asdfasdfasdfasdfasdfasdfasdf ");
+  //     handleSearch("");
+  //     setSelectedItem("Item Name");
+  //     inputItemValue.current = "";
+  //     setListData(listData);
+  //   });
+  //   return unsubscribe;
+  // }, [props.navigation]);
+  if (refreshing) {
+    return (
+      <View style={styles.container}>
+        <Header
+          toggleDrawer={props.navigation.toggleDrawer}
+          screenName={props.route.params.screenHeader}
+        />
+        <View style={styles.mainView}>
+          <ActivityIndicator size="large" color="#0c76e6" />
+        </View>
+      </View>
+    );
+  }
+
+
   const handleChange = (quantity, id, serialNo, title) => {
     id = inputItemValue.current.id;
     for (let key in listData) {
@@ -362,6 +368,8 @@ const PickupInternalScreen = (props) => {
     setQuery("");
     setListData(listData2);
   };
+
+  console.log("Internal screen me hunn")
 
   return (
     <View style={styles.container}>

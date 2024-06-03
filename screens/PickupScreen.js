@@ -171,7 +171,6 @@ const PickupScreen = (props) => {
         );
         setRefreshing(false);
         responsePickup = await response.json();
-        console.log("---1", responsePickup);
         orderID = responsePickup.order_id;
         setListData(responsePickup.Services);
         setScreenTitle(responsePickup.title);
@@ -198,7 +197,6 @@ const PickupScreen = (props) => {
   useFocusEffect(useCallback(() => {
     LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
     try {
-      console.log("---1 USE EFFECT---");
       fetchData();
     } catch (error) {
       Alert.alert(error);
@@ -244,11 +242,11 @@ const PickupScreen = (props) => {
       }
       try {
         props_navigation.navigate("PickupInternal", {
-          screenHeader: itemData.service_name,
-          apiPath: itemData.service_link,
+          screenHeader: itemData?.service_name,
+          apiPath: itemData?.service_link,
           rider_id: storedRiderID,
           order_id: orderID,
-          service_id: itemData.service_id,
+          service_id: itemData?.service_id,
         });
       } catch (e) {
         console.log(e);

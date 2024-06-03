@@ -32,20 +32,10 @@ const dummyItems = [
     const addons = props.route.params.addons
     const itemID = props.route.params.itemID
     const serviceName = props.route.params.serviceName
-    // console.log('--1')
-    // console.log(itemID)
-    // console.log(addons)
-    // console.log('--2')
-
-    // console.log("--1--")
-    // console.log(selectedItems)
-    // console.log("--2--")
 
     useEffect(() => {
       if(checkingTitle.indexOf(screenTitle) !== -1){
-        console.log("Value exists!")
       } else{
-        console.log("Value does not exists!")
         for (let i in addons){
           let newArray = [...checkingTitle, screenTitle]
           setCheckingTitle(newArray)
@@ -66,18 +56,10 @@ const dummyItems = [
       },[screenTitle]);
 
     const onSelectedItemsChange = (selectedItems,aa) => {
-      // console.log('item ID:',itemID)
-      // console.log('add  ID:',selectedItems)
-      // console.log('-->',aa)
-      // console.log('both   :',selectedItems+itemID)
-      // console.log(selectedItems)  
       props.route.params.selectAddons(selectedItems)
       setSelectedItems(selectedItems);
     };
-    
-    // console.log(items)
-    // console.log(screenTitle)
-    // console.log(selectedItems)
+
     return (
         <View style={styles.container}>
         <Header
