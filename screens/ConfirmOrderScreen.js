@@ -1,5 +1,5 @@
 //https://blog.jscrambler.com/add-a-search-bar-using-hooks-and-flatlist-in-react-native/
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   StyleSheet,
   View,
@@ -16,7 +16,7 @@ import * as SecureStore from "expo-secure-store";
 import NetInfo from "@react-native-community/netinfo";
 import Header from "../components/Header";
 import { env } from "../env";
-import { useRoute } from "@react-navigation/native";
+import { useFocusEffect, useIsFocused, useRoute } from "@react-navigation/native";
 import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
 
@@ -39,6 +39,10 @@ async function fetchWithTimeout(url, options, timeout) {
 
 
 const ConfirmOrderScreen = (props) => {
+
+
+const isFocused = useIsFocused()
+
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowAlert: true,
@@ -370,7 +374,7 @@ const ConfirmOrderScreen = (props) => {
     );
 
     return () => backHandler.remove();
-  }, []);
+  }, [isFocused]);
 
   return (
     <View style={styles.container}>
