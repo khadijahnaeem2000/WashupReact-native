@@ -411,7 +411,7 @@ const MyRides = (props) => {
               <TouchableOpacity
                 style={styles.MeterReadingView}
                 onPress={() => {
-                  props.navigation.navigate("Meter Reading");
+                  props.navigation.navigate("MeterReading");
                 }}
               >
                 <Text style={{ color: "white" }}>Start Your Day</Text>

@@ -32,13 +32,10 @@ const profilePictureURI = Image.resolveAssetSource(profilePicture).uri;
 
 function CustomDrawerContent(props) {
 
-    
+
     const [profilePic, setProfilePic] = useState(profilePictureURI);
     const [profileName, setProfileName] = useState("Name");
     const dispatch = useDispatch();
-
- 
-    
 
     const handleSignOut = async () => {
         dispatch(authActions.signOut());
@@ -67,7 +64,7 @@ function CustomDrawerContent(props) {
         } catch (err) {
         }
     };
-    
+
     const meterCheck = async () => {
         try {
             let savedToken = await SecureStore.getItemAsync("token");
@@ -93,9 +90,7 @@ function CustomDrawerContent(props) {
     };
 
     const { state, ...rest } = props;
-    const newState = { ...state };
 
-    newState.routes = newState.routes.filter((item) => !["Pickup", "PickupInternal", "Drop Off", "QR Code", "PickupInternalAddonsScreen", "CancelScreen", "Confirm Order"].includes(item.name));
 
     return (
         <DrawerContentScrollView {...rest}>
@@ -114,18 +109,40 @@ function CustomDrawerContent(props) {
                     />
                 )}
             />
-            {newState.routes.map((route, index) => (
-                <DrawerItem
-                    key={index}
-                    label={route.name}
-                    onPress={() => props.navigation.navigate(route.name)}
-                />
-            ))}
+            <DrawerItem
+                label={"Dashboard"}
+                onPress={() => props.navigation.navigate("Dashboard")}
+            />
+            <DrawerItem
+                label={"Meter Reading"}
+                onPress={() => props.navigation.navigate("MeterReading")}
+            />
+            <DrawerItem
+                label={"My Rides"}
+                onPress={() => props.navigation.navigate("MyRides")}
+            />
+            <DrawerItem
+                label={"Payment Only Rides"}
+                onPress={() => props.navigation.navigate("PaymentOnlyRides")}
+            />
+            <DrawerItem
+                label={"Recent Orders"}
+                onPress={() => props.navigation.navigate("RecentOrders")}
+            />
+            <DrawerItem
+                label={"Orders Payment"}
+                onPress={() => props.navigation.navigate("OrdersPayment")}
+            />
+            <DrawerItem
+                label={"Ride History"}
+                onPress={() => props.navigation.navigate("RideHistory")}
+            />
+
             <DrawerItem
                 labelStyle={{ color: "black" }}
                 label="Logout"
                 onPress={handleSignOut}
-                icon={({ focused, color, size }) => (
+                icon={({ focused }) => (
                     <Icon
                         name="logout"
                         color={focused ? "#03fcf8" : "black"}

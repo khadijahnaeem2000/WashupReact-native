@@ -95,7 +95,7 @@ const checkAuth = async () => {
 const AppNavigator = () => {
   const dispatch = useDispatch();
 
-  const {isSignedIn , isTokenChecked} = useSelector((state) => state.auth);
+  const { isSignedIn, isTokenChecked , isSignout } = useSelector((state) => state.auth);
 
   if (!!isSignedIn & !!isTokenChecked) {
     return (
@@ -120,7 +120,7 @@ const AppNavigator = () => {
           component={SignInScreen}
           options={{
             title: "Sign in",
-            animationTypeForReplace: state.isSignout ? "pop" : "push",
+            animationTypeForReplace: isSignout ? "pop" : "push",
           }}
         />
         <Stack.Screen
@@ -128,7 +128,7 @@ const AppNavigator = () => {
           component={ForgottenPasswordScreen}
           options={{
             title: "Forgotten Password?",
-            animationTypeForReplace: state.isSignout ? "pop" : "push",
+            animationTypeForReplace: isSignout ? "pop" : "push",
           }}
         />
       </Stack.Navigator>
