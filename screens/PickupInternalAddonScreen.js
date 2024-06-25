@@ -15,7 +15,7 @@ const dummyItems = [
   {id: 9, name: 'gitlab'},
   {id: 10, name: 'instagram'},
 ]
-  const PickupInternalAddonsScreen = props => {
+  const PickupInternalAddons = props => {
 
     
     // console.log(props.route.params)
@@ -117,4 +117,4 @@ const dummyItems = [
     },
   });
 
-  export default PickupInternalAddonsScreen;
+  export default PickupInternalAddons;

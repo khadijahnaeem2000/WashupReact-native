@@ -45,7 +45,7 @@ const OntimeImageURI = Image.resolveAssetSource(OntimeImage).uri;
 const DropOffImageURI = Image.resolveAssetSource(DropOffImage).uri;
 const PickUpImageURI = Image.resolveAssetSource(PickUpImage).uri;
 //-----------------FOR IMAGES-----------------//
-const RideHistoryScreen = (props) => {
+const RideHistory = (props) => {
   //---------------DATE STUFF----------------------//
   const monthNames = [
     "January",
@@ -360,4 +360,4 @@ const styles = StyleSheet.create({
     marginLeft: 30,
   },
 });
-export default RideHistoryScreen;
+export default RideHistory;

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Alert,View,Text } from "react-native";
+import React from "react";
+import { Alert } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
@@ -8,49 +8,34 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
 import SignInScreen from "../screens/SignInScreen";
 import ForgottenPasswordScreen from "../screens/ForgottenPasswordScreen";
-import MeterReadingScreen from "../screens/MeterReadingScreen";
-import YourTodayRidesScreen from "../screens/YourTodayRidesScreen";
-import RideHistoryScreen from "../screens/RideHistoryScreen";
-import PickupScreen from "../screens/PickupScreen";
-import PickupInternalScreen from "../screens/PickupInternalScreen";
-import DropOffScreen from "../screens/DropOffScreen";
 import CustomDrawerContent from "./CustomDrawerContent";
-import DashboardScreen from "../screens/DashboardScreen";
-import PickupInternalAddonsScreen from "../screens/PickupInternalAddonScreen";
-import QRCodeScreen from "../screens/QRCodeScreen";
-import CancelScreen from "../screens/CancelScreen";
-import ConfirmOrderScreen from "../screens/ConfirmOrderScreen";
-import CollectPaymentScreen from "../screens/CollectPaymentScreen";
-import RecentOrdersScreen from "../screens/RecentOrdersScreen";
-import OrdersPaymentScreen from "../screens/OrdersPaymentScreen";
 import NetInfo from "@react-native-community/netinfo";
 import * as authActions from "../store/actions/auth";
 import { useSelector, useDispatch } from "react-redux";
 import { env } from "../env";
-import DropOffStack from "./DropOffStack";
+import DashboardStack from "./DashboardStack";
 
 async function fetchWithTimeout(url, options, timeout) {
-    return new Promise(async (resolve, reject) => {
-        const timeoutId = setTimeout(() => {
-            reject(new Error('Request Timeout'));
-        }, timeout);
+  return new Promise(async (resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      reject(new Error('Request Timeout'));
+    }, timeout);
 
-        try {
-            const response = await fetch(url, options);
-            clearTimeout(timeoutId);
-            resolve(response);
-        } catch (error) {
-            clearTimeout(timeoutId);
-            reject(error);
-        }
-    });
+    try {
+      const response = await fetch(url, options);
+      clearTimeout(timeoutId);
+      resolve(response);
+    } catch (error) {
+      clearTimeout(timeoutId);
+      reject(error);
+    }
+  });
 }
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 let storedEmail;
 let storedToken;
-let initialRoute;
 const URL = env.URL + env.api_daystatus;
 
 const meterCheck = async () => {
@@ -108,11 +93,11 @@ const checkAuth = async () => {
 };
 
 const AppNavigator = () => {
-  const [authenticatedMeterCheck, setAuthenticatedMeterCheck] = useState(false);
-  const state = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-  //Following Snippet is for Splash Screen! It checks if token and email exists!
-  if (!!state.isSignedIn & !!state.isTokenChecked) {
+
+  const {isSignedIn , isTokenChecked} = useSelector((state) => state.auth);
+
+  if (!!isSignedIn & !!isTokenChecked) {
     return (
       <AppLoading
         startAsync={checkAuth}
@@ -121,16 +106,15 @@ const AppNavigator = () => {
             dispatch(authActions.alreadySignedIn());
           } else {
             dispatch(authActions.notSignedIn());
-            setAuthenticatedMeterCheck(false);
           }
         }}
       />
-     
     );
   }
-  if (!state.isSignedIn) {
+
+  if (!isSignedIn) {
     return (
-      <Stack.Navigator screenOptions={{headerShown:false}}  >
+      <Stack.Navigator screenOptions={{ headerShown: false }}  >
         <Stack.Screen
           name="SignIn"
           component={SignInScreen}
@@ -155,7 +139,7 @@ const AppNavigator = () => {
         initialRouteName="Dashboard"
         labelStyle={{ fontSize: "2%" }}
         screenOptions={{
-          headerShown:false,
+          headerShown: false,
           backgroundColor: "#0c76e6",
           padding: 0,
           itemStyle: {
@@ -173,8 +157,8 @@ const AppNavigator = () => {
         drawerContent={(props) => <CustomDrawerContent {...props} />}
       >
         <Drawer.Screen
-          name="Dashboard"
-          component={DashboardScreen}
+          name="DashboardStack"
+          component={DashboardStack}
           options={{
             drawerIcon: ({ focused, size }) => (
               <Icon
@@ -186,181 +170,6 @@ const AppNavigator = () => {
             ),
           }}
         />
-        <Drawer.Screen
-          name="Meter Reading"
-          component={MeterReadingScreen}
-          options={{
-            drawerIcon: ({ focused, size }) => (
-              <Icon
-                name="speedometer"
-                color={focused ? "#03fcf8" : "white"}
-                size={22}
-                focused={true}
-                style={{ marginRight: -20 }}
-              />
-            ),
-          }}
-        />
-        <Drawer.Screen
-          name="My Rides"
-          component={YourTodayRidesScreen}
-          options={{
-            drawerIcon: ({ focused, size }) => (
-              <Icon
-                name="motorbike"
-                color={focused ? "#03fcf8" : "white"}
-                size={22}
-                style={{ marginRight: -20 }}
-              />
-            ),
-          }}
-        />
-        <Drawer.Screen
-          name="Payment Only Rides"
-          component={CollectPaymentScreen}
-          options={{
-            drawerIcon: ({ focused, size }) => (
-              <Icon
-                name="cash"
-                color={focused ? "#03fcf8" : "white"}
-                size={22}
-                style={{ marginRight: -20 }}
-              />
-            ),
-          }}
-        />
-        <Drawer.Screen
-          name="Recent Orders"
-          component={RecentOrdersScreen}
-          options={{
-            drawerIcon: ({ focused, size }) => (
-              <Icon
-                name="motorbike"
-                color={focused ? "#03fcf8" : "white"}
-                size={22}
-                style={{ marginRight: -20 }}
-              />
-            ),
-          }}
-        />
-        {/* <Drawer.Screen
-          name="Orders Payment"
-          component={RecentOrdersScreen}
-          options={{
-            drawerIcon: ({ focused, size }) => (
-              <Icon
-                name="account-cash"
-                color={focused ? "#03fcf8" : "white"}
-                size={22}
-                style={{ marginRight: -20 }}
-              />
-            ),
-          }}
-        /> */}
-        <Drawer.Screen
-          name="Ride History"
-          component={RideHistoryScreen}
-          options={{
-            drawerIcon: ({ focused, size }) => (
-              <Icon
-                name="history"
-                color={focused ? "#03fcf8" : "white"}
-                size={22}
-                style={{ marginRight: -20 }}
-              />
-            ),
-          }}
-        />
-        <Drawer.Screen
-          name="Orders Payment"
-          component={OrdersPaymentScreen}
-          options={{
-            drawerIcon: ({ focused, size }) => (
-              <Icon
-                name="history"
-                color={focused ? "#03fcf8" : "white"}
-                size={22}
-                style={{ marginRight: -20 }}
-              />
-            ),
-          }}
-        />
-        <Drawer.Screen
-          name="Pickup"
-          component={PickupScreen}
-          options={{
-            drawerIcon: ({ focused, size }) => (
-              <Icon
-                name="history"
-                color={focused ? "#03fcf8" : "white"}
-                size={22}
-                style={{ marginRight: -20 }}
-              />
-            ),
-          }}
-        />
-        <Drawer.Screen
-          name="PickupInternal"
-          component={PickupInternalScreen}
-          options={{
-            drawerIcon: ({ focused, size }) => (
-              <Icon
-                name="history"
-                color={focused ? "#03fcf8" : "white"}
-                size={22}
-                style={{ marginRight: -20 }}
-              />
-            ),
-          }}
-        />
-        <Drawer.Screen
-          name="Drop Off"
-          component={DropOffStack}
-          options={{
-            drawerIcon: ({ focused, size }) => (
-              <Icon
-                name="history"
-                color={focused ? "#03fcf8" : "white"}
-                size={22}
-                style={{ marginRight: -20 }}
-              />
-            ),
-          }}
-        />
-        {/* <Drawer.Screen
-          name="QR Code"
-          component={QRCodeScreen}
-          icon={({ focused, color, size }) => (
-            <Icon
-              color={color}
-              size={size}
-              name={focused ? "heart" : "heart-outline"}
-            />
-          )}
-        /> */}
-        <Drawer.Screen
-          name="PickupInternalAddonsScreen"
-          component={PickupInternalAddonsScreen}
-          icon={({ focused, color, size }) => (
-            <Icon
-              color={color}
-              size={size}
-              name={focused ? "heart" : "heart-outline"}
-            />
-          )}
-        />
-        <Drawer.Screen
-          name="CancelScreen"
-          component={CancelScreen}
-          icon={({ focused, color, size }) => (
-            <Icon
-              color={color}
-              size={size}
-              name={focused ? "heart" : "heart-outline"}
-            />
-          )}
-        />
-        <Drawer.Screen name="Confirm Order" component={ConfirmOrderScreen} />
       </Drawer.Navigator>
     );
   }

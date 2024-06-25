@@ -76,7 +76,7 @@ let dummyData = [
   },
 ];
 //-----------------FOR IMAGES-----------------//
-const YourTodayRidesScreen = (props) => {
+const MyRides = (props) => {
   const URL = env.URL + env.api_todayrides;
   const [startDay, setStartDay] = useState();
   const [countFirstTime, setCountFirstTime] = useState(false);
@@ -91,12 +91,12 @@ const YourTodayRidesScreen = (props) => {
   const refreshScreen = props.route.params;
 
 
-  if (startDay && !endDay && !endDayNotification && listData.length === 0) {
-    Alert.alert("End Day", "End Your Day!", [
-      { text: "OK", onPress: () => props.navigation.navigate("Meter Reading") },
-    ]);
-    setEndDayNotification(true);
-  }
+  // if (startDay && !endDay && !endDayNotification && listData.length === 0) {
+  //   Alert.alert("End Day", "End Your Day!", [
+  //     { text: "OK", onPress: () => props.navigation.navigate("Meter Reading") },
+  //   ]);
+  //   setEndDayNotification(true);
+  // }
 
   async function fetchStoredData() {
     try {
@@ -557,4 +557,4 @@ const styles = StyleSheet.create({
     minHeight: 420,
   },
 });
-export default YourTodayRidesScreen;
+export default MyRides;

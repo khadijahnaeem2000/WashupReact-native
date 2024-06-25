@@ -17,23 +17,24 @@ import { env } from "../env";
 import { Picker } from "@react-native-picker/picker";
 
 async function fetchWithTimeout(url, options, timeout) {
-    return new Promise(async (resolve, reject) => {
-        const timeoutId = setTimeout(() => {
-            reject(new Error('Request Timeout'));
-        }, timeout);
+  return new Promise(async (resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      reject(new Error('Request Timeout'));
+    }, timeout);
 
-        try {
-            const response = await fetch(url, options);
-            clearTimeout(timeoutId);
-            resolve(response);
-        } catch (error) {
-            clearTimeout(timeoutId);
-            reject(error);
-        }
-    });
+    try {
+      const response = await fetch(url, options);
+      clearTimeout(timeoutId);
+      resolve(response);
+    } catch (error) {
+      clearTimeout(timeoutId);
+      reject(error);
+    }
+  });
 }
 
-const CancelScreen = (props) => {
+const Cancel = (props) => {
+
   const URL = env.URL + env.api_cancel;
   const order_id = props.route.params.order_id;
   const recentOrders = props.route.params.recentOrders;
@@ -55,9 +56,8 @@ const CancelScreen = (props) => {
       console.log(error);
     }
   }, [order_id]);
+
   const reasonHandler = (itemValue, itemIndex) => {
-    console.log("--1", itemValue);
-    console.log("REASON SELECTED : ", itemValue);
     itemValue === "Other" ? setOtherSelected(true) : setOtherSelected(false);
     setSelectedReason(itemValue);
   };
@@ -67,7 +67,6 @@ const CancelScreen = (props) => {
     const { isConnected } = await NetInfo.fetch();
     storedEmail = await AsyncStorage.getItem("email");
     const finalURL = URL;
-    console.log("Fetching Data From:", finalURL);
 
     if (isConnected) {
       try {
@@ -251,6 +250,9 @@ const CancelScreen = (props) => {
   );
 };
 
+export default Cancel;
+
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -289,4 +291,3 @@ const styles = StyleSheet.create({
     margin: 10,
   },
 });
-export default CancelScreen;

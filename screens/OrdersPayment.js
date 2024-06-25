@@ -17,20 +17,20 @@ import Header from "../components/Header";
 import { env } from "../env";
 
 async function fetchWithTimeout(url, options, timeout) {
-    return new Promise(async (resolve, reject) => {
-        const timeoutId = setTimeout(() => {
-            reject(new Error('Request Timeout'));
-        }, timeout);
+  return new Promise(async (resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      reject(new Error('Request Timeout'));
+    }, timeout);
 
-        try {
-            const response = await fetch(url, options);
-            clearTimeout(timeoutId);
-            resolve(response);
-        } catch (error) {
-            clearTimeout(timeoutId);
-            reject(error);
-        }
-    });
+    try {
+      const response = await fetch(url, options);
+      clearTimeout(timeoutId);
+      resolve(response);
+    } catch (error) {
+      clearTimeout(timeoutId);
+      reject(error);
+    }
+  });
 }
 
 const OrdersPayment = (props) => {
@@ -83,6 +83,7 @@ const OrdersPayment = (props) => {
       </View>
     );
   }
+
   async function fetchData() {
     const { isConnected } = await NetInfo.fetch();
     storedRiderID = await AsyncStorage.getItem("rider_id");
@@ -183,10 +184,10 @@ const OrdersPayment = (props) => {
           renderItem={renderRegularOrder}
           keyExtractor={(item) => item.order_id.toString()}
           style={styles.PaymentDataTables}
-          // extraData={selectedId}
-          // style={styles.TestDev}
-          // refreshing={refreshing}
-          // onRefresh={onRefresh}
+        // extraData={selectedId}
+        // style={styles.TestDev}
+        // refreshing={refreshing}
+        // onRefresh={onRefresh}
         />
         <View style={styles.marginTopAdd}>
           <View style={styles.tableHead}>
@@ -201,8 +202,8 @@ const OrdersPayment = (props) => {
           keyExtractor={(item) => item.order_id.toString()}
           // extraData={selectedId}
           style={styles.PaymentDataTables}
-          // refreshing={refreshing}
-          // onRefresh={onRefresh}
+        // refreshing={refreshing}
+        // onRefresh={onRefresh}
         />
         {/* <FlatList
         data={DATA}
@@ -220,6 +221,8 @@ const OrdersPayment = (props) => {
     </View>
   );
 };
+
+export default OrdersPayment;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -371,4 +374,4 @@ const styles = StyleSheet.create({
     zIndex: 9,
   },
 });
-export default OrdersPayment;
+

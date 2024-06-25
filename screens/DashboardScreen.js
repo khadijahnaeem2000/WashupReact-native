@@ -49,7 +49,7 @@ const PickUpImageURI = Image.resolveAssetSource(PickUpImage).uri;
 const washupLogoURI = Image.resolveAssetSource(washupLogo).uri;
 //-----------------FOR IMAGES-----------------//
 
-const DashboardScreen = (props) => {
+const Dashboard = (props) => {
   //---------------DATE STUFF----------------------//
   const monthNames = [
     "January",
@@ -398,4 +398,4 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
 });
-export default DashboardScreen;
+export default Dashboard;

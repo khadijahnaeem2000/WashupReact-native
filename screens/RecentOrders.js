@@ -47,9 +47,8 @@ const toBePackedURI = Image.resolveAssetSource(toBePackedImage).uri;
 const handImgURI = Image.resolveAssetSource(handImg).uri;
 let selectedURI;
 
+const RecentOrders = (props) => {
 
-
-const RecentOrdersScreen = (props) => {
   const URL = env.URL + env.api_recentorders;
   const [startDay, setStartDay] = useState();
   const [endDay, setEndDay] = useState();
@@ -411,4 +410,4 @@ const styles = StyleSheet.create({
     minHeight: 420,
   },
 });
-export default RecentOrdersScreen;
+export default RecentOrders;

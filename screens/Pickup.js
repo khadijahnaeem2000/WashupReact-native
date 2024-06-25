@@ -41,7 +41,7 @@ async function fetchWithTimeout(url, options, timeout) {
   });
 }
 
-const PickupScreen = (props) => {
+const Pickup = (props) => {
   let responsePickup;
   const URL = env.URL + env.api_pickup;
   const [selectedId, setSelectedId] = useState(null);
@@ -579,4 +579,4 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
-export default PickupScreen;
+export default Pickup;

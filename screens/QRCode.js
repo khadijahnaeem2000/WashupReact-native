@@ -11,7 +11,7 @@ import Header from '../components/Header'
 import { CameraView, Camera } from "expo-camera/next";
 
 
-const QRCodeScreen = props => {
+const QRCode = props => {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
 
@@ -47,6 +47,8 @@ const QRCodeScreen = props => {
       </View>
     </View>;
   }
+
+
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
     console.log("DATA:", data)
@@ -77,9 +79,6 @@ const QRCodeScreen = props => {
       Alert.alert("Wrong QR Code Scanned!!", data)
     }
   }
-
-
-
 
   if (hasPermission === null) {
     return <View style={styles.container}>
@@ -118,6 +117,11 @@ const QRCodeScreen = props => {
     </View>
   );
 };
+
+export default QRCode;
+
+
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -135,4 +139,3 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   }
 });
-export default QRCodeScreen;

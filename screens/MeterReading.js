@@ -16,7 +16,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Header from "../components/Header";
 import ImgPicker from "../components/ImagePicker";
 
-const MeterReadingScreen = (props) => {
+const MeterReading = (props) => {
+
   const [refreshingStoredData, setRefreshingStoredData] = useState(false);
   const [selectedImage, setSelectedImage] = useState();
   const [startDay, setStartDay] = useState();
@@ -209,4 +210,4 @@ const styles = StyleSheet.create({
     height: 1,
   },
 });
-export default MeterReadingScreen;
+export default MeterReading;

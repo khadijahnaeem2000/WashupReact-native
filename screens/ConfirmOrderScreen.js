@@ -38,7 +38,7 @@ async function fetchWithTimeout(url, options, timeout) {
 }
 
 
-const ConfirmOrderScreen = (props) => {
+const ConfirmOrder = (props) => {
 
 
 const isFocused = useIsFocused()
@@ -173,9 +173,7 @@ const isFocused = useIsFocused()
         order_id: order_id,
         order_note: order_note,
       });
-    console.log(sendDataObj);
     const confirmURL = env.URL + env.api_confirmpickup;
-    console.log("Sending Data To: ", confirmURL);
     let savedToken = await SecureStore.getItemAsync("token");
 
     savedToken = savedToken.substring(1, savedToken.length - 1);
@@ -372,7 +370,6 @@ const isFocused = useIsFocused()
       'hardwareBackPress',
       backAction,
     );
-
     return () => backHandler.remove();
   }, [isFocused]);
 
@@ -437,23 +434,7 @@ const isFocused = useIsFocused()
                   { backgroundColor: "#c1c1c1" },
                 ]}
                 onPress={fetchnodata}
-
-              // onPress={() => {
-              //   senddatano
-
-              //   if (recentOrders) {
-              //   //   props.navigation.navigate("Recent Orders", {
-              //   //     order_completed: order_id,
-              //   //   });
-              //   // } else {
-              //   //   props.navigation.navigate("My Rides", {
-              //   //     order_completed: order_id,
-              //   //   });
-
-              //   }
-              // }}
               >
-
                 <Text style={{ color: "white" }}>No</Text>
               </TouchableOpacity>
             </View>
@@ -463,6 +444,8 @@ const isFocused = useIsFocused()
     </View>
   );
 };
+
+export default ConfirmOrder;
 
 const styles = StyleSheet.create({
   container: {
@@ -523,4 +506,4 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 });
-export default ConfirmOrderScreen;
+

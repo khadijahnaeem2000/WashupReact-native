@@ -36,7 +36,7 @@ async function fetchWithTimeout(url, options, timeout) {
   });
 }
 
-const PickupInternalScreen = (props) => {
+const PickupInternal = (props) => {
   let responsePickup;
   const URL = env.URL + props?.route?.params?.apiPath;
   const order_id = props.route.params.order_id;
@@ -473,6 +473,9 @@ const PickupInternalScreen = (props) => {
     </View>
   );
 };
+
+export default PickupInternal;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -661,4 +664,3 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
 });
-export default PickupInternalScreen;

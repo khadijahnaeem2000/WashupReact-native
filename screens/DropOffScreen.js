@@ -42,7 +42,7 @@ async function fetchWithTimeout(url, options, timeout) {
   });
 }
 
-const DropOffScreen = (props) => {
+const DropOff = (props) => {
   const route = useRoute();
 
   useEffect(() => {
@@ -700,6 +700,9 @@ const DropOffScreen = (props) => {
 };
 
 
+export default DropOff
+
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -935,4 +938,3 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
 });
-export default DropOffScreen;

@@ -1,18 +1,18 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import QRCodeScreen from "../screens/QRCodeScreen";
-import DropOffScreen from "../screens/DropOffScreen";
+import QRCodeScreen from "../screens/QRCode";
+import DropOff from "../screens/DropOffScreen";
 
 const DropOffStack = () => {
     const Stack = createStackNavigator();
 
     return (
         <Stack.Navigator
-        initialRouteName="DropOffScreen"
+            initialRouteName="DropOff"
             screenOptions={{ headerShown: false }}
         >
-            <Stack.Screen name="DropOffScreen" component={DropOffScreen} />
-            <Stack.Screen name="QR Code" component={QRCodeScreen} />
+            <Stack.Screen name="DropOff" component={DropOff} />
+            <Stack.Screen name="QRCode" component={QRCodeScreen} />
         </Stack.Navigator>
     );
 };

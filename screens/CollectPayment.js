@@ -47,7 +47,8 @@ async function fetchWithTimeout(url, options, timeout) {
 const handImgURI = Image.resolveAssetSource(handImg).uri;
 //-----------------FOR IMAGES-----------------//
 
-const CollectPaymentScreen = (props) => {
+const CollectPayment = (props) => {
+
   const URL = env.URL + env.api_collectpayment;
   const [selectedId, setSelectedId] = useState(null);
   const [listData, setListData] = useState([]);
@@ -593,4 +594,4 @@ const styles = StyleSheet.create({
     backgroundColor: "#c7c7c7",
   },
 });
-export default CollectPaymentScreen;
+export default CollectPayment;
