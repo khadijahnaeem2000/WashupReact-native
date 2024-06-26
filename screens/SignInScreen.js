@@ -23,25 +23,21 @@ const authBackgroundURI = Image.resolveAssetSource(authBackground).uri
 const washupLogoURI = Image.resolveAssetSource(washupLogo).uri
 
 let stateForStyle
-const SignInScreen = props => {
+const SignInScreen = () => {
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const netInfo = useNetInfo();
     const state = useSelector(state => state.auth);
+
     stateForStyle = state
-    console.log(state)
     const dispatch = useDispatch();
-    console.log('email : ', email)
-    console.log('password : ', password)
-    const handleFogottenPassword = () => {
-        console.log(props.navigation.navigate('ForgottenPassword'))
-    }
+    const handleFogottenPassword = () => {  }
     const handleSignIn = () => {
         if (!netInfo.isConnected) {
             Alert.alert("Internet Error!")
         }
         else {
-            // Alert.alert("Signing In! Please Wait!")
             dispatch(authActions.signIn(email, password))
         }
     }

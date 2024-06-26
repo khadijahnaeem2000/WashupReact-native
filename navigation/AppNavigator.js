@@ -52,7 +52,6 @@ const meterCheck = async () => {
       redirect: "follow",
     };
     let finalURL = `${URL}/${storedRiderID}`;
-    console.log("Fetching Data From", finalURL);
     let response = await fetchWithTimeout(
       finalURL,
       requestOptions,
@@ -65,7 +64,6 @@ const meterCheck = async () => {
       JSON.stringify({ startDay: response.startDay, endDay: response.endDay })
     );
   } catch (error) {
-    console.log("Error in setting meter data!", error);
   }
 };
 const checkAuth = async () => {

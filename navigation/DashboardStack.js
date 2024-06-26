@@ -7,11 +7,13 @@ import CollectPayment from "../screens/CollectPayment";
 import DropOff from "../screens/DropOffScreen";
 import OrdersPayment from "../screens/OrdersPayment";
 import Pickup from "../screens/Pickup";
-import PickupInternal from "../screens/PickupInternalScreen";
+import PickupInternal from "../screens/PickupInternal";
 import PickupInternalAddons from "../screens/PickupInternalAddonScreen";
 import QRCode from "../screens/QRCode";
 import RecentOrders from "../screens/RecentOrders";
 import RideHistory from "../screens/RideHistory";
+import ConfirmOrder from "../screens/ConfirmOrder";
+import Cancel from "../screens/Cancel";
 
 const DashboardStack = () => {
     const Stack = createStackNavigator();
@@ -33,6 +35,8 @@ const DashboardStack = () => {
             <Stack.Screen name="QRCode" component={QRCode} />
             <Stack.Screen name="RecentOrders" component={RecentOrders} />
             <Stack.Screen name="RideHistory" component={RideHistory} />
+            <Stack.Screen name="ConfirmOrder" component={ConfirmOrder} />
+            <Stack.Screen name="Cancel" component={Cancel} />
         </Stack.Navigator>
     );
 };

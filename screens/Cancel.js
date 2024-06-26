@@ -33,11 +33,10 @@ async function fetchWithTimeout(url, options, timeout) {
   });
 }
 
-const Cancel = (props) => {
+const Cancel = ({navigation , route}) => {
 
   const URL = env.URL + env.api_cancel;
-  const order_id = props.route.params.order_id;
-  const recentOrders = props.route.params.recentOrders;
+  const {order_id , recentOrders} = route.params;
   const [refreshing, setRefreshing] = useState(false);
   const [reason, setReason] = useState([]);
   const [otherSelected, setOtherSelected] = useState(false);
@@ -53,7 +52,6 @@ const Cancel = (props) => {
       setSendingReason(false);
       fetchData();
     } catch (error) {
-      console.log(error);
     }
   }, [order_id]);
 
@@ -91,15 +89,11 @@ const Cancel = (props) => {
         let responseJson = await response.json();
         setSelectedReason("Select One");
         let modifiedReason = ["Select One", ...responseJson.reason, "Other"];
-        console.log("MODIFIED REASON: ", modifiedReason);
         setReason(modifiedReason);
       } catch (error) {
-        console.log("--000--");
         error = "Request Timeout, Check Your Connection"
           ? alert("Request Timeout, Check Your Connection")
           : alert("Server Error!");
-        console.log(error);
-        console.log("--001--");
       }
     } else {
       Alert.alert("Internet Error!");
@@ -109,7 +103,7 @@ const Cancel = (props) => {
     return (
       <View style={styles.container}>
         <Header
-          toggleDrawer={props.navigation.toggleDrawer}
+          toggleDrawer={navigation.toggleDrawer}
           screenName="Cancel"
         />
         <View style={styles.mainView}>
@@ -121,11 +115,11 @@ const Cancel = (props) => {
   return (
     <View style={styles.container}>
       <Header
-        toggleDrawer={props.navigation.toggleDrawer}
+        toggleDrawer={navigation.toggleDrawer}
         screenName={"Cancel Screen"}
       />
       <View style={styles.mainView}>
-        <Text style={styles.FieldTitle}>{props.route.params.screenTitle}</Text>
+        <Text style={styles.FieldTitle}>{route.params.screenTitle}</Text>
         <Text style={styles.FieldTitle}>Reason</Text>
         <Picker selectedValue={selectedReason} onValueChange={reasonHandler}>
           {reason.map((item, index) => {
@@ -155,18 +149,15 @@ const Cancel = (props) => {
               alert("Select a Reason!");
               return;
             } else if (selectedReason === "Other") {
-              console.log("Other Selected");
               sendReason = otherReasonText;
               if (!otherReasonText) {
                 alert("Type The Reason");
                 return;
               }
             } else {
-              console.log("Other not selected");
               sendReason = selectedReason;
             }
             storedRiderID = await AsyncStorage.getItem("rider_id");
-            // console.log("Submited Pressed!")
             alert("Sending Reason!");
             setSendingReason(true);
             const sendDataObj = {
@@ -180,14 +171,12 @@ const Cancel = (props) => {
             myHeaders.append("Content-Type", "application/json");
             myHeaders.append("Authorization", `Bearer ${savedToken}`);
             var raw = JSON.stringify(sendDataObj);
-            console.log(raw);
             const requestOptions = {
               method: "POST",
               headers: myHeaders,
               body: raw,
               redirect: "follow",
             };
-            console.log("Sending data to: ", URL);
             setRefreshing(true);
             fetchWithTimeout(
               URL,
@@ -197,27 +186,21 @@ const Cancel = (props) => {
             )
               .then((response) => response.text())
               .then((result) => {
-                console.log("---Shameel1");
-                console.log(result);
                 result = JSON.parse(result);
-                console.log("---Shameel2");
-                console.log(result);
-                console.log("---Shameel3");
                 if (result.status === "success") {
                   alert("Order Cancelled!");
                   setSendingReason(true);
                   setRefreshing(false);
                   if (recentOrders) {
-                    props.navigation.navigate("Recent Orders", {
+                    navigation.navigate("RecentOrders", {
                       order_completed: order_id,
                     });
                   } else {
-                    props.navigation.navigate("My Rides", {
+                    navigation.navigate("MyRides", {
                       order_completed: order_id,
                     });
                   }
                 } else if (result.status == "failed") {
-                  console.log("0000---->", result.error, typeof result.error);
                   let errorConcat = `Error: ${result.error}`;
                   alert(errorConcat);
                   setSendingReason(true);
@@ -226,17 +209,13 @@ const Cancel = (props) => {
                   setSendingReason(true);
                   setRefreshing(false);
                   alert("Server Error!");
-                  console.log(result);
                   alert("Server Error:");
                 }
               })
               .catch((error) => {
-                console.log("--000--");
                 error = "Request Timeout, Check Your Connection"
                   ? alert("Request Timeout, Check Your Connection")
                   : alert("Server Error!");
-                console.log(error);
-                console.log("--001--");
                 setSendingReason(true);
                 setRefreshing(false);
               });

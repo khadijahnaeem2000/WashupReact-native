@@ -4,28 +4,18 @@ import {
     View, 
     Text, 
     Image, 
-    TextInput,
-    ImageBackground,
     TouchableOpacity,
     Platform,
     Dimensions
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import header from '../assets/images/header.png'
-
 import washupLogo from '../assets/images/logo.png'
 
-
-//-----------------FOR IMAGES-----------------//
 const headerURI     = Image.resolveAssetSource(header).uri
 const washupLogoURI = Image.resolveAssetSource(washupLogo).uri
 
-//-----------------FOR IMAGES-----------------//
 const Header = ({toggleDrawer,screenName,backButton}) => {
-
-    // console.log('--------->',props)
-    // console.log('-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=->',backButton)
-
 
     const handleDrawer = () => {
         toggleDrawer()      

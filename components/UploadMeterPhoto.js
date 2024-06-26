@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { StyleSheet, TouchableOpacity, Text, Alert } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -23,14 +23,12 @@ async function fetchWithTimeout(url, options, timeout) {
 }
 
 export const alreadySignedIn = () => {
-  console.log('AUTHENTICATION ACTION : ALREADY_SIGNED_IN')
   return async dispatch => {
     dispatch({ type: ALREADY_SIGNED_IN })
   }
 }
 
 export const notSignedIn = () => {
-  console.log('AUTHENTICATION ACTION : NOT_SIGNED_IN')
   return async dispatch => {
     dispatch({ type: NOT_SIGNED_IN })
   }
@@ -40,9 +38,7 @@ function UploadMeterPhoto(props) {
   const URL = env.URL + env.api_meterPhoto;
 
   if (props.imageURI) {
-    console.log("Image to upload -->", props.imageURI);
   } else {
-    console.log("Image URI is not available to Upload on Server!");
   }
 
   let photo = {
@@ -54,8 +50,6 @@ function UploadMeterPhoto(props) {
   const uploadPhotoHandler = async () => {
 
 
-    console.log("Meter Reading Type------->>>", props.meterReadingType);
-    console.log(props);
     if (
       !props.imageURI &&
       !props.meterReadingType &&
@@ -81,7 +75,6 @@ function UploadMeterPhoto(props) {
       if (isConnected) {
         try {
           const finalURL = URL;
-          console.log("Sending Data To:", finalURL);
 
           Alert.alert("Image Uploading", "Please Wait");
 
@@ -119,7 +112,6 @@ function UploadMeterPhoto(props) {
             .then(async (result) => {
               result = JSON.parse(result);
               fetchResult = result;
-              console.log("Meeeete Readun Result Ststtautuatuatuatua", result);
               if (result.status == "failed") {
                 alert("Error Occured!");
                 props.setRefreshing(false);
@@ -127,7 +119,6 @@ function UploadMeterPhoto(props) {
 
               // This is for End Day
               if (result.status == "pending") {
-                console.log("--->> Meter Photo Sent | Order Remaining!");
                 alert(result.data);
                 props.setRefreshing(false);
               }
@@ -135,10 +126,9 @@ function UploadMeterPhoto(props) {
               // This is for Start Day
 
               if (result.status == "error") {
-                console.log("--->> Meter Photo Sent | Day Already Started!");
                 alert(result.data);
                 props.setRefreshing(false);
-                props.props_navigation.navigate("My Rides", {
+                props.props_navigation.navigate("MyRides", {
                   enableRides: true,
                 });
                 props.setRefreshing(false);
@@ -161,16 +151,14 @@ function UploadMeterPhoto(props) {
               }
 
               if (result.success == "true") {
-                console.log("--->> Meter Photo Sent");
                 props.setRefreshing(false);
 
                 let meterReadingType = null;
                 props.meterReadingType == "0"
                   ? (meterReadingType = "Start Day")
                   : (meterReadingType = "End Day");
-                console.log("==--==--==>   meterReadingType  meterReadingType  meterReadingType meterReadingType ", meterReadingType);
                 if (meterReadingType == "Start Day") {
-                  props.props_navigation.navigate("My Rides", {
+                  props.props_navigation.navigate("MyRides", {
                     enableRides: true,
                   });
                 }
@@ -185,24 +173,15 @@ function UploadMeterPhoto(props) {
               // }
             })
             .catch((error) => {
-              console.log("--000--");
               error = "Request Timeout, Check Your Connection"
                 ? alert("Request Timeout, Check Your Connection")
                 : alert("Server Error!");
-              console.log(error);
-              console.log("--001--");
               props.setRefreshing(false);
             });
 
-          console.log("-------------------------------------------122");
-          console.log(fetchResult, typeof fetchResult);
           // fetchResult = fetchResult.json()
-          console.log(fetchResult.success, typeof fetchResult.success);
-          console.log(props.meterReadingType, typeof fetchResult.success);
-          console.log("-------------------------------------------221");
 
         } catch (e) {
-          console.log(e);
           alert("Picture Not Sent!");
           setRefreshing(false);
         }

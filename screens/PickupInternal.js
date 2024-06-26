@@ -36,15 +36,15 @@ async function fetchWithTimeout(url, options, timeout) {
   });
 }
 
-const PickupInternal = (props) => {
-  let responsePickup;
-  const URL = env.URL + props?.route?.params?.apiPath;
-  const order_id = props.route.params.order_id;
-  const service_id = props.route.params.service_id;
-  const rider_id = props.route.params.rider_id;
-  const inputItem = useRef(null);
+const PickupInternal = ({ navigation, route }) => {
   const inputItemValue = useRef("");
   const inputQuantity = useRef("");
+  const inputItem = useRef(null);
+  let responsePickup;
+  const URL = env.URL + route?.params?.apiPath;
+
+  const { order_id, service_id, rider_id } = route.params;
+
   const [listData, setListData] = useState([]);
   const [listData2, setListData2] = useState([]);
   const [query, setQuery] = useState("");
@@ -77,14 +77,12 @@ const PickupInternal = (props) => {
         setKeyboardVisible(false); // or some other action
       }
     );
-
     return () => {
       keyboardDidHideListener.remove();
       keyboardDidShowListener.remove();
     };
   }, []);
 
-  //--------------------FUNCTIONS START------------------//
   async function fetchData() {
     const { isConnected } = await NetInfo.fetch();
     storedRiderID = await AsyncStorage.getItem("rider_id");
@@ -108,7 +106,6 @@ const PickupInternal = (props) => {
           10000,
           "Request Timeout, Check Your Connection"
         );
-        console.log("responseeee" , response)
         setRefreshing(false);
         responsePickup = await response.json();
         for (let key in responsePickup.items) {
@@ -124,7 +121,6 @@ const PickupInternal = (props) => {
           ? setWeight("")
           : setWeight(responsePickup.weight.toString());
       } catch (error) {
-        console.log("erorrrrrrr" , error)
         error = "Request Timeout, Check Your Connection"
           ? alert("Request Timeout, Check Your Connection")
           : alert("Server Error!");
@@ -139,7 +135,7 @@ const PickupInternal = (props) => {
 
   useEffect(() => {
     try {
-      setWeight(""); //clears the weight value for different screen!
+      setWeight("");
       setCurrentItemNote("");
       setQuery("");
       fetchData();
@@ -148,23 +144,14 @@ const PickupInternal = (props) => {
     } catch (error) {
       Alert.alert("Error");
     }
-  }, [URL , props?.route?.params]);
-  // useEffect(() => {
-  //   const unsubscribe = props.navigation.addListener("focus", () => {
-  //     handleSearch("asdfasdfasdfasdfasdfasdfasdf ");
-  //     handleSearch("");
-  //     setSelectedItem("Item Name");
-  //     inputItemValue.current = "";
-  //     setListData(listData);
-  //   });
-  //   return unsubscribe;
-  // }, [props.navigation]);
+  }, [URL, route?.params]);
+
   if (refreshing) {
     return (
       <View style={styles.container}>
         <Header
-          toggleDrawer={props.navigation.toggleDrawer}
-          screenName={props.route.params.screenHeader}
+          toggleDrawer={navigation.toggleDrawer}
+          screenName={route.params.screenHeader}
         />
         <View style={styles.mainView}>
           <ActivityIndicator size="large" color="#0c76e6" />
@@ -240,7 +227,7 @@ const PickupInternal = (props) => {
       Alert.alert("Incorrect Pieces", "Pieces must be greater than 0");
       return;
     }
-    if(selectedItem === 'Item Name'){
+    if (selectedItem === 'Item Name') {
       Alert.alert("Select Item", "Please Select any item first");
       return;
     }
@@ -276,32 +263,20 @@ const PickupInternal = (props) => {
         result = JSON.parse(result);
         if (result.status === "success") {
           let totalQuantity = 0;
-          // ---------- Summing up total items for notification! ------------ //
           for (let key in listData) {
-            console.log(
-              "---->",
-              listData[key]["quantity"],
-              typeof listData[key]["quantity"],
-              totalQuantity,
-              typeof totalQuantity
-            );
             if (listData[key]["quantity"] > 0) {
               totalQuantity = totalQuantity + listData[key]["quantity"];
             }
           }
           Alert.alert(
-            `${props.route.params.screenHeader}`,
+            `${route.params.screenHeader}`,
             `Body: ${totalQuantity} Items, Weight: ${weight}`
           );
           PickupInternalScreenUpdated
             ? setPickupInternalScreenUpdated(false)
             : setPickupInternalScreenUpdated(true);
-          props.navigation.navigate("Pickup", {
-            orderID: order_id,
-
-
-          }),
-            setRefreshing(true);
+          navigation.goBack()
+          setRefreshing(true);
         } else {
           Alert.alert("Server Error! Data Not Sent!");
           setRefreshing(false);
@@ -315,7 +290,6 @@ const PickupInternal = (props) => {
       });
   };
 
-  //--------------------FUNCTIONS END------------------//
   const renderHeader = () => {
     return (
       <View
@@ -369,18 +343,16 @@ const PickupInternal = (props) => {
     setListData(listData2);
   };
 
-  console.log("Internal screen me hunn")
-
   return (
     <View style={styles.container}>
       <Header
-        toggleDrawer={props.navigation.toggleDrawer}
-        screenName={props.route.params.screenHeader}
+        toggleDrawer={navigation.toggleDrawer}
+        screenName={route.params.screenHeader}
       />
       <ScrollView style={styles.mainView}>
         <View style={styles.SetPaddArea}>
           <Text style={styles.textService}>
-            {props.route.params.screenHeader}
+            {route.params.screenHeader}
           </Text>
           <View style={styles.SearchParent}>
             <TextInput
@@ -422,8 +394,8 @@ const PickupInternal = (props) => {
               // selectTextOnFocus={!selectedItem === "Item Name" ? true : false}
               onChangeText={(quantity) => handleChange(quantity)}
               onSubmitEditing={() => handleSubmit()}
-              onPressOut={() => {}}
-              onPressIn={() => {}}
+              onPressOut={() => { }}
+              onPressIn={() => { }}
               onFocus={() => {
                 setShowBottomSection(false);
                 inputItemValue.current.title

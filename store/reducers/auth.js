@@ -17,7 +17,6 @@ const initialState = {
     switch (action.type) {
 
     case REFRESHING:
-        console.log("AUTHENTICATION REDUCER : REFRESHING")
         state = {
             ...state,
             refreshing:action.payload
@@ -25,7 +24,6 @@ const initialState = {
         return state;  
 
     case SIGN_IN:
-        console.log("AUTHENTICATION REDUCER : SIGN_IN")
         state = {
             ...state,
             isSignedIn:action.payload,
@@ -36,7 +34,6 @@ const initialState = {
         return state;  
 
     case SIGN_IN_ERROR:
-        console.log("AUTHENTICATION REDUCER : SIGN_IN_ERROR")
         state = {
             ...state,
             signInError:action.payload,
@@ -45,7 +42,6 @@ const initialState = {
         return state;  
     
     case SIGN_OUT:
-        console.log('AUTHENTICATION REDUCER : SIGN_OUT')
         state = {
             ...state,
             isSignedIn:false,
@@ -55,8 +51,6 @@ const initialState = {
         return state
 
     case ALREADY_SIGNED_IN:
-        console.log('AUTHENTICATION REDUCER : ALREADY_SIGNED_IN')
-
             state = {
                 ...state,
                 isSignedIn:true,
@@ -66,8 +60,6 @@ const initialState = {
         return state;  
 
     case NOT_SIGNED_IN:
-        console.log('AUTHENTICATION REDUCER : NOT_SIGNED_IN')
-
             state = {
                 ...state,
                 isSignedIn:false,

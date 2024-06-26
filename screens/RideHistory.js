@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
   Text,
-  TextInput,
   Image,
   Dimensions,
   ScrollView,
@@ -14,7 +13,6 @@ import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
 import NetInfo from "@react-native-community/netinfo";
-import header from "../assets/images/header.png";
 import AllLocationsImage from "../assets/images/allLocations.png";
 import OntimeImage from "../assets/images/ontime.png";
 import DropOffImage from "../assets/images/dropoff.png";
@@ -23,30 +21,28 @@ import Header from "../components/Header";
 import { env } from "../env";
 
 async function fetchWithTimeout(url, options, timeout) {
-    return new Promise(async (resolve, reject) => {
-        const timeoutId = setTimeout(() => {
-            reject(new Error('Request Timeout'));
-        }, timeout);
-
-        try {
-            const response = await fetch(url, options);
-            clearTimeout(timeoutId);
-            resolve(response);
-        } catch (error) {
-            clearTimeout(timeoutId);
-            reject(error);
-        }
-    });
+  return new Promise(async (resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      reject(new Error('Request Timeout'));
+    }, timeout);
+    try {
+      const response = await fetch(url, options);
+      clearTimeout(timeoutId);
+      resolve(response);
+    } catch (error) {
+      clearTimeout(timeoutId);
+      reject(error);
+    }
+  });
 }
-
-//-----------------FOR IMAGES-----------------//
 const AllLocationsImageURI = Image.resolveAssetSource(AllLocationsImage).uri;
 const OntimeImageURI = Image.resolveAssetSource(OntimeImage).uri;
 const DropOffImageURI = Image.resolveAssetSource(DropOffImage).uri;
 const PickUpImageURI = Image.resolveAssetSource(PickUpImage).uri;
-//-----------------FOR IMAGES-----------------//
-const RideHistory = (props) => {
-  //---------------DATE STUFF----------------------//
+
+
+const RideHistory = ({ navigation, route }) => {
+
   const monthNames = [
     "January",
     "February",
@@ -65,15 +61,6 @@ const RideHistory = (props) => {
   let currentYear = currentDate.getFullYear();
   let currentMonth = monthNames[currentDate.getMonth()];
   let currentMonthNumber = (currentDate.getMonth() + 1).toString();
-  console.log("---DATE---", currentDate);
-  console.log("---YEAR---", currentYear);
-  console.log(
-    "---CURRENT---",
-    currentMonth,
-    currentMonthNumber,
-    typeof currentMonthNumber
-  );
-  //----------------------------------------------//
   let riderHistoryObj = {
     dropAchieved: 0,
     dropTarget: 0,
@@ -91,19 +78,20 @@ const RideHistory = (props) => {
   const [selectedYear, setSelectedYear] = useState(currentYear);
   const [listData, setListData] = useState(riderHistoryObj);
   const [refreshing, setRefreshing] = useState(false);
+
+
   useEffect(() => {
     try {
       fetchData();
     } catch (error) {
-      console.log(error);
     }
   }, [selectedYear, selectedMonth]);
   if (refreshing) {
     return (
       <View style={styles.container}>
         <Header
-          toggleDrawer={props.navigation.toggleDrawer}
-          screenName={props.route.name}
+          toggleDrawer={navigation.toggleDrawer}
+          screenName={route.name}
         />
         <View style={styles.mainView}>
           <ActivityIndicator size="large" color="#0c76e6" />
@@ -114,9 +102,7 @@ const RideHistory = (props) => {
   async function fetchData() {
     const { isConnected } = await NetInfo.fetch();
     storedRiderID = await AsyncStorage.getItem("rider_id");
-    console.log("Rider ID -=-=>", storedRiderID);
     let finalURL = URL + `/${storedRiderID}/${selectedYear}/${selectedMonth}`;
-    console.log("Fetching Data From:", finalURL);
     if (isConnected) {
       try {
         setRefreshing(true);
@@ -138,26 +124,20 @@ const RideHistory = (props) => {
         );
         setRefreshing(false);
         let responseJson = await response.json();
-        console.log(responseJson);
         setListData(responseJson);
       } catch (error) {
-        console.log("--000--");
         error = "Request Timeout, Check Your Connection"
           ? alert("Request Timeout, Check Your Connection")
           : alert("Server Error!");
-        console.log(error);
-        console.log("--001--");
       }
     } else {
       Alert.alert("Internet Error!");
     }
   }
   const monthHandler = (itemValue, itemIndex) => {
-    console.log("MONTH SELECTED : ", itemValue, typeof itemValue);
     setSelectedMonth(itemValue);
   };
   const yearHandler = (itemValue, itemIndex) => {
-    console.log("YEAR SELECTED : ", itemValue);
     setSelectedYear(itemValue);
   };
   let years = [];
@@ -170,11 +150,12 @@ const RideHistory = (props) => {
     return years.toString();
   };
   yearsFunc();
+
   return (
     <View style={styles.container}>
       <Header
-        toggleDrawer={props.navigation.toggleDrawer}
-        screenName={props.route.name}
+        toggleDrawer={navigation.toggleDrawer}
+        screenName={route.name}
       />
       <View style={styles.mainView}>
         <View style={styles.bottomView}>

@@ -15,7 +15,7 @@ import {
   RefreshControl,
   Platform,
 } from "react-native";
-import { useRoute } from "@react-navigation/native";
+import { useFocusEffect, useRoute } from "@react-navigation/native";
 import * as SecureStore from "expo-secure-store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
@@ -42,49 +42,15 @@ async function fetchWithTimeout(url, options, timeout) {
   });
 }
 
-const DropOff = (props) => {
-  const route = useRoute();
+const DropOff = ({ navigation, route }) => {
+  const notificationListener = useRef();
+  const responseListener = useRef();
+  let storedEmail;
+  let countQRScans = 0;
+  let QRScanHeading;
+  let initialURL;
 
-  useEffect(() => {
-    const backAction = () => {
-      if (
-        route.name === "Dashboard" ||
-        route.name === "My Rides" ||
-        route.name === "Meter Reading" ||
-        route.name === "Ride History" ||
-        route.name === "Payment Only Rides" ||
-        route.name === "Recent Orders"
-      ) {
-        props.navigation.navigate("Dashboard");
-      } else if (
-        route.name === "Pickup" &&
-        route.params.recentOrders === true
-      ) {
-        props.navigation.navigate("Recent Orders");
-      } else if (
-        route.name === "Pickup" ||
-        route.name === "Drop Off" ||
-        route.name === "Payment Only Rides" ||
-        route.name === "Recent Orders"
-      ) {
-        props.navigation.navigate("My Rides");
-      } else if (route.name === "PickupInternal") {
-        props.navigation.navigate("Pickup");
-      } else if (route.name === "PickupInternalAddonsScreen") {
-        props.navigation.navigate("PickupInternal");
-      } else if (route.name === "QR Code") {
-        props.navigation.navigate("Drop Off");
-      }
-      backHandler.remove();
-      return true;
-    };
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-    return () => backHandler.remove();
-  }, []);
-
+  const { screenTitle, screenType, orderID, customerID } = route?.params;
 
   const [refreshingStoredData, setRefreshingStoredData] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
@@ -94,8 +60,9 @@ const DropOff = (props) => {
   const [listData, setListData] = useState([]);
   const [paymentSent, setPaymentSent] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [expoPushToken, setExpoPushToken] = useState("");
+  const [notification, setNotification] = useState(false);
 
-  //----------------------NOTIFICATION HOOKS AND FUNCTIONS ----------------------//
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowAlert: true,
@@ -103,14 +70,13 @@ const DropOff = (props) => {
       shouldSetBadge: false,
     }),
   });
-  const [expoPushToken, setExpoPushToken] = useState("");
-  const [notification, setNotification] = useState(false);
-  const notificationListener = useRef();
-  const responseListener = useRef();
 
-  const onRefresh = useCallback(() => {
+
+  // useFocusEffect(
+  useEffect(() => {
     fetchData();
-  }, []);
+  }, [])
+  // )
 
   useEffect(() => {
     registerForPushNotificationsAsync().then((token) =>
@@ -130,17 +96,17 @@ const DropOff = (props) => {
       Notifications.removeNotificationSubscription(responseListener);
     };
   }, []);
+
   async function schedulePushNotification() {
     await Notifications.scheduleNotificationAsync({
       content: {
         title: "Washup!",
         body: "Order Delivered!",
-        // data: { data: 'goes here' },
       },
-      // trigger: { seconds: 2 },
       trigger: null,
     });
   }
+
   async function registerForPushNotificationsAsync() {
     let token;
     if (Constants.isDevice) {
@@ -171,16 +137,6 @@ const DropOff = (props) => {
     }
     return token;
   }
-  //----------------------------------------------------------------------------------------//
-  const screenTitle = props?.route?.params?.screenTitle;
-  const screenType = props?.route?.params?.screenType;
-  const orderID = props?.route?.params?.orderID;
-  const customerID = props?.route?.params?.customerID;
-  let storedEmail;
-  //These variables are for changing color for main heading of QR SCAN
-  let countQRScans = 0;
-  let QRScanHeading;
-  let initialURL;
 
   useEffect(() => {
     setAllQRscanned(false);
@@ -189,7 +145,6 @@ const DropOff = (props) => {
 
 
   if (isNaN(receivedAmount)) {
-    // If the Given Value is Not Number Then It Will Return True and This Part Will Execute.
     let value = receivedAmount;
     value = value.substring(0, value.length - 1);
     Alert.alert("Value is Not Number");
@@ -199,7 +154,7 @@ const DropOff = (props) => {
     return (
       <View style={styles.container}>
         <Header
-          toggleDrawer={props.navigation.toggleDrawer}
+          toggleDrawer={navigation.toggleDrawer}
           screenName={screenTitle}
         />
         <View style={styles.mainView}>
@@ -208,14 +163,11 @@ const DropOff = (props) => {
       </View>
     );
   }
-  //------------Functions Start Here---------------//
-
   async function fetchData() {
-    //This is only in dropoff because this screen is also used in Pick&Drop
     setPaymentSent(false);
     setReceivedAmount("");
     const { isConnected } = await NetInfo.fetch();
-    screenType === "Drop Off"
+    screenType === "DropOff"
       ? (initialURL = env.URL + env.api_dropoff)
       : (initialURL = env.URL + env.api_pickdrop);
     storedRiderID = await AsyncStorage.getItem("rider_id");
@@ -288,7 +240,7 @@ const DropOff = (props) => {
         );
         response = await response.json();
         setRefreshing(false);
-        props.navigation.navigate("Pickup", {
+        navigation.navigate("Pickup", {
           pickdropdata: response,
           screenTitle: response.title,
           orderID: response.order_id,
@@ -304,9 +256,7 @@ const DropOff = (props) => {
       Alert.alert("Internet Error!");
     }
   }
-  const paymentFunc = (received_amount, navigate) => async (props) => {
-    //checking values which are not numbers have already been done
-    // here we will check whether receivedAmount is empty or not.
+  const paymentFunc = async (received_amount,) => {
     if (!received_amount) {
       Alert.alert("Insert Received Amount!");
       return;
@@ -318,7 +268,6 @@ const DropOff = (props) => {
       received_amount: parseInt(received_amount),
       polybag_items: listData.polybag_items,
     };
-    // Sending Data
     const paymentURL = env.URL + env.api_payment;
     let savedToken = await SecureStore.getItemAsync("token");
     savedToken = savedToken.substring(1, savedToken.length - 1);
@@ -337,9 +286,6 @@ const DropOff = (props) => {
       "Please Wait",
       [
         {
-          // text: "Cancel",
-          // onPress: () => {},
-          // style: "cancel"
         },
       ],
       { cancelable: false }
@@ -371,7 +317,7 @@ const DropOff = (props) => {
           alert("Data Sent!");
           setRefreshing(false);
           schedulePushNotification();
-          navigate("Pickup", {
+          navigation.navigate("Pickup", {
             pickdropdata: paymentResponse.data.original,
             screenTitle: paymentResponse.data.original.title,
             orderID: paymentResponse.data.original.order_id,
@@ -379,9 +325,7 @@ const DropOff = (props) => {
         } else if (paymentResponse.status === 'failed') {
           alert(paymentResponse.error);
           setRefreshing(false);
-          navigate("My Rides", {
-            order_completed: orderID,
-          })
+          navigation.goBack()
         }
 
         else {
@@ -417,13 +361,16 @@ const DropOff = (props) => {
     );
   };
   const ItemPolybag = ({ item, onPress }) => {
-    const scanQRFunc = (qrData) => {
 
+
+    const scanQRFunc = (qrData) => {
+      console.log("QR DATaaaaa", qrData)
       item.polybag_qr = qrData;
-      //For loop is necessary because it verifies scanning of every qr scan.
       for (let key in listData.polybag_items) {
+        console.log("Poly bag keeyyssysysyysysy", listData.polybag_items[key], listData.polybag_items[key]["polybag_qr"])
         listData.polybag_items[key]["polybag_qr"] ? (countQRScans += 1) : null;
       }
+      console.log("listData", listData.polybag, countQRScans)
       if (countQRScans === parseInt(listData.polybag)) {
         QRScanHeading = [styles.TapableBox, styles.ScanTapperGreen];
         setAllQRscanned(true);
@@ -432,9 +379,12 @@ const DropOff = (props) => {
       QRState ? setQRState(false) : setQRState(true);
     };
     let colorQR = null;
+    console.log("item.polybag_qr", item.polybag_qr)
     item.polybag_qr
       ? (colorQR = [styles.ScanTapper, styles.ScanTapperGreen])
       : (colorQR = [styles.ScanTapper]);
+
+    console.log("colorQR", colorQR)
     return (
       <View style={styles.RowData}>
         <Text style={[styles.RowText, styles.RowTextCol2]}>
@@ -448,7 +398,7 @@ const DropOff = (props) => {
             style={colorQR}
             onPress={() => {
               !item.polybag_qr
-                ? props.navigation.navigate("QR Code", {
+                ? navigation.navigate("QRCode", {
                   itemData: item,
                   scanQRFunc: scanQRFunc,
                 })
@@ -503,7 +453,7 @@ const DropOff = (props) => {
   return (
     <View style={styles.container}>
       <Header
-        toggleDrawer={props.navigation.toggleDrawer}
+        toggleDrawer={navigation.toggleDrawer}
         screenName={screenTitle}
       />
       <View style={styles.mainView}>
@@ -514,7 +464,7 @@ const DropOff = (props) => {
           refreshControl={
             <RefreshControl
               refreshing={refreshingStoredData}
-              onRefresh={onRefresh}
+              onRefresh={() => fetchData()}
             />
           }
         >
@@ -639,7 +589,7 @@ const DropOff = (props) => {
                   ])
                   : (QRScanHeading = [styles.TapableBox])
               }
-              onPress={paymentFunc(receivedAmount, props.navigation.navigate)}
+              onPress={() => paymentFunc(receivedAmount)}
             >
               <Text style={styles.TapableText}>Payment</Text>
             </TouchableOpacity>
@@ -647,11 +597,11 @@ const DropOff = (props) => {
               disabled={paymentSent ? true : false}
               style={styles.TapableBox}
               onPress={() => {
-                props.navigation.navigate("CancelScreen", {
+                navigation.navigate("Cancel", {
                   rider_id: storedEmail,
                   order_id: orderID,
                   screenTitle: screenTitle,
-                  recentOrders: props?.route?.params?.recentOrders,
+                  recentOrders: route?.params?.recentOrders,
                 });
               }}
             >
@@ -682,7 +632,7 @@ const DropOff = (props) => {
                     ]}
                     onPress={() => {
                       setPaymentSent(false);
-                      props.navigation.navigate("My Rides", {
+                      navigation.navigate("MyRides", {
                         order_completed: orderID,
                       });
                     }}
@@ -915,10 +865,8 @@ const styles = StyleSheet.create({
     // marginTop:10,
   },
   PlaceOrderYes: {
-    marginTop: 10,
     marginRight: 10,
     alignItems: "center",
-    // padding:40
   },
   PlaceOrderNoThanks: {
     marginLeft: 10,

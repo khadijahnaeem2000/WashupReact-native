@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Text,
   View,
@@ -33,8 +33,8 @@ async function fetchWithTimeout(url, options, timeout) {
   });
 }
 
-const OrdersPayment = (props) => {
-  //---------------DATE STUFF----------------------//
+const OrdersPayment = ({navigation , route}) => {
+
   let regularOrderObj = [
     {
       order_id: 0,
@@ -48,34 +48,25 @@ const OrdersPayment = (props) => {
       order_amount: "0",
     },
   ];
+
   const URL = env.URL + env.api_report;
-  const [refreshingStoredData, setRefreshingStoredData] = useState(false);
   const [regularOrder, setRegularOrder] = useState(regularOrderObj);
   const [paymentOrder, setPaymentOrder] = useState(paymentOnlyOrderObj);
   const [totalAmount, setTotalAmount] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
 
-  const onRefresh = useCallback(() => {
-    try {
-      fetchData();
-    } catch (e) {
-      console.log(e);
-    }
-  }, [refreshing]);
 
   useEffect(() => {
-    try {
       fetchData();
-    } catch (error) {
-      console.log(error);
-    }
   }, []);
+
+
   if (refreshing) {
     return (
       <View style={styles.container}>
         <Header
-          toggleDrawer={props.navigation.toggleDrawer}
-          screenName={props.route.name}
+          toggleDrawer={navigation.toggleDrawer}
+          screenName={route.name}
         />
         <View style={styles.mainView}>
           <ActivityIndicator size="large" color="#0c76e6" />
@@ -135,7 +126,6 @@ const OrdersPayment = (props) => {
   }
 
   let renderRegularOrder = (props) => {
-    console.log(props.item);
     return (
       <View style={styles.tabledataRow}>
         <Text style={styles.tabledataText}>{props.item.order_id}</Text>
@@ -147,34 +137,21 @@ const OrdersPayment = (props) => {
   return (
     <View style={styles.container}>
       <Header
-        toggleDrawer={props.navigation.toggleDrawer}
-        screenName={props.route.name}
+        toggleDrawer={navigation.toggleDrawer}
+        screenName={route.name}
       />
-      {/* <ScrollView
-        style={styles.mainView}
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshingStoredData}
-            onRefresh={onRefresh}
-          />
-        }
-      > */}
+     
       <View style={styles.mainView}>
         <View style={styles.subTotal}>
           <TouchableOpacity
             onPress={() => fetchData()}
-            // style={{  }
             style={styles.iconStyle}
           >
             <Icon name="reload" color="#fff" size={28} />
           </TouchableOpacity>
           <Text style={styles.subTotal_text}>{totalAmount} PKR</Text>
         </View>
-        {/* <View>
-          <Text style={styles.TableMainHeading}>Regular Order</Text>
-        </View> */}
+       
         <View style={styles.tableHead}>
           <Text style={styles.tabHeadingtext}>Regular Order #</Text>
           <Text style={styles.tabHeadingtext}>Payment</Text>
@@ -184,10 +161,6 @@ const OrdersPayment = (props) => {
           renderItem={renderRegularOrder}
           keyExtractor={(item) => item.order_id.toString()}
           style={styles.PaymentDataTables}
-        // extraData={selectedId}
-        // style={styles.TestDev}
-        // refreshing={refreshing}
-        // onRefresh={onRefresh}
         />
         <View style={styles.marginTopAdd}>
           <View style={styles.tableHead}>
@@ -200,23 +173,8 @@ const OrdersPayment = (props) => {
           data={paymentOrder}
           renderItem={renderRegularOrder}
           keyExtractor={(item) => item.order_id.toString()}
-          // extraData={selectedId}
           style={styles.PaymentDataTables}
-        // refreshing={refreshing}
-        // onRefresh={onRefresh}
         />
-        {/* <FlatList
-        data={DATA}
-        renderItem={renderItem}
-        keyExtractor={item => item.id} */}
-
-        {/* <View style={styles.bottomView}>
-          <View>
-            <Text style={(styles.TableMainHeading, styles.noMarginTop)}>
-              Khatam!! Tata, ByeBye
-            </Text>
-          </View>
-        </View> */}
       </View>
     </View>
   );

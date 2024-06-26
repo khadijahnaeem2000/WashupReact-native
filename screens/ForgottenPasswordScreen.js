@@ -51,9 +51,7 @@ const ForgottenPasswordScreen = props => {
             Alert.alert("Internet Error!")
         }
         else {
-            console.log("-1-")
             const URL = env.URL + env.api_forgot
-            console.log("-2-")
             try {
                 setRefreshing(true)
                 let response = await fetchWithTimeout(
@@ -71,7 +69,6 @@ const ForgottenPasswordScreen = props => {
                 );
                 let json = await response.json();
                 setRefreshing(false)
-                console.log(json)
                 if (json.status == "failed") {
                     alert(json.error)
                 }
@@ -80,12 +77,9 @@ const ForgottenPasswordScreen = props => {
                 }
             }
             catch (error) {
-                console.log('--000--')
                 error = 'Request Timeout, Check Your Connection' ?
                     alert("Request Timeout, Check Your Connection") :
                     alert("Server Error!")
-                console.log(error);
-                console.log('--001--')
                 setRefreshing(false)
             }
         }

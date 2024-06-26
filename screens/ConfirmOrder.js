@@ -38,10 +38,20 @@ async function fetchWithTimeout(url, options, timeout) {
 }
 
 
-const ConfirmOrder = (props) => {
+const ConfirmOrder = ({navigation , route}) => {
+  const {order_id , customer_name , customer_id , order_note , rider_id , location , isUserNew , addressID , recentOrders} = route.params;
+  const isFocused = useIsFocused()
+  const notificationListener = useRef();
+  const responseListener = useRef();
 
+  const [showBottomContent, setShowBottomContent] = useState(false);
+  const [listData, setListData] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const [isDataSent, setIsDataSent] = useState(false);
+  const [enableYes, setEnableYes] = useState(true);
+  const [expoPushToken, setExpoPushToken] = useState("");
+  const [notification, setNotification] = useState(false);
 
-const isFocused = useIsFocused()
 
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -50,24 +60,7 @@ const isFocused = useIsFocused()
       shouldSetBadge: false,
     }),
   });
-  const order_id = props.route.params.order_id;
-  const customer_name = props.route.params.customer_name;
-  const customer_id = props.route.params.customer_id;
-  const order_note = props.route.params.order_note;
-  const rider_id = props.route.params.rider_id;
-  const location = props.route.params.location;
-  const isUserNew = props.route.params.isUserNew;
-  const addressID = props.route.params.addressID;
-  const recentOrders = props.route.params.recentOrders;
-  const [showBottomContent, setShowBottomContent] = useState(false);
-  const [listData, setListData] = useState([]);
-  const [refreshing, setRefreshing] = useState(false);
-  const [isDataSent, setIsDataSent] = useState(false);
-  const [enableYes, setEnableYes] = useState(true);
-  const [expoPushToken, setExpoPushToken] = useState("");
-  const [notification, setNotification] = useState(false);
-  const notificationListener = useRef();
-  const responseListener = useRef();
+
 
   useEffect(() => {
     registerForPushNotificationsAsync().then((token) =>
@@ -80,7 +73,6 @@ const isFocused = useIsFocused()
     );
     responseListener.current = Notifications.addNotificationResponseReceivedListener(
       (response) => {
-        console.log(response);
       }
     );
     return () => {
@@ -101,6 +93,7 @@ const isFocused = useIsFocused()
       trigger: null,
     });
   }
+
   async function registerForPushNotificationsAsync() {
     let token;
     if (Constants.isDevice) {
@@ -117,7 +110,6 @@ const isFocused = useIsFocused()
         return;
       }
       token = (await Notifications.getExpoPushTokenAsync()).data;
-      console.log(token);
     } else {
       alert("Must use physical device for Push Notifications");
     }
@@ -142,7 +134,7 @@ const isFocused = useIsFocused()
     return (
       <View style={styles.container}>
         <Header
-          toggleDrawer={props.navigation.toggleDrawer}
+          toggleDrawer={navigation.toggleDrawer}
           screenName="Confirm Screen"
         />
         <View style={styles.mainView}>
@@ -164,8 +156,8 @@ const isFocused = useIsFocused()
         rider_id: rider_id,
         order_id: order_id,
         order_note: order_note,
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
+        latitude: location?.coords?.latitude,
+        longitude: location?.coords?.longitude,
         address_id: addressID,
       })
       : (sendDataObj = {
@@ -192,9 +184,7 @@ const isFocused = useIsFocused()
       "Please Wait",
       [
         {
-          // text: "Cancel",
-          // onPress: () => console.log("Cancel Pressed"),
-          // style: "cancel"
+         
         },
       ],
       { cancelable: false }
@@ -207,7 +197,6 @@ const isFocused = useIsFocused()
     )
       .then((response) => response.text())
       .then((result) => {
-        console.log(result, typeof result);
 
         if (typeof result === "string") {
           confirmResponse = JSON.parse(result);
@@ -220,20 +209,20 @@ const isFocused = useIsFocused()
           setIsDataSent(true);
           setEnableYes(false);
           setRefreshing(false);
-          props.route.params.setOrderNote("");
+          route.params.setOrderNote("");
         } else if (confirmResponse.status === 'failed') {
           alert(confirmResponse.error);
           schedulePushNotification();
           setIsDataSent(true);
           setEnableYes(false);
           setRefreshing(false);
-          props.route.params.setOrderNote("");
+          route.params.setOrderNote("");
           if (recentOrders) {
-            props.navigation.navigate("Recent Orders", {
+            navigation.navigate("RecentOrders", {
               order_completed: order_id,
             });
           } else {
-            props.navigation.navigate("My Rides", {
+            navigation.navigate("MyRides", {
               order_completed: order_id,
             });
           }
@@ -266,8 +255,6 @@ const isFocused = useIsFocused()
     };
     let addAnotherOrderURL =
       env.URL + env.api_addanotherorder + `/${storedRiderID}/${customer_id}`;
-    console.log("Fetching Data From:", addAnotherOrderURL);
-    console.log("Token --->", savedToken);
     if (isConnected) {
       try {
         // setRefreshing(true);
@@ -279,14 +266,13 @@ const isFocused = useIsFocused()
         );
         response = await response?.json();
         // setEnableYes(false);
-        props.navigation.navigate("Pickup", {
+        navigation.navigate("Pickup", {
           pickdropdata: response,
           screenTitle: response.title,
           orderID: response.order_id,
         });
         setRefreshing(false);
       } catch (error) {
-        console.log(error?.data);
         setRefreshing(false);
       }
     } else {
@@ -326,7 +312,7 @@ const isFocused = useIsFocused()
           [
             {
               text: "OK",
-              onPress: () => props.navigation.navigate("My Rides"), // Remove unnecessary empty object
+              onPress: () => navigation.navigate("MyRides"), // Remove unnecessary empty object
             }
           ],
           { cancelable: false }
@@ -354,11 +340,10 @@ const isFocused = useIsFocused()
         },
         {
           text: 'YES', onPress: async () => {
-            console.log("isDataaSentttt", isDataSent)
             if (isDataSent) {
               fetchnodata()
             } else {
-              props.navigation.goBack()
+              navigation.goBack()
             }
           }
         },
@@ -376,7 +361,7 @@ const isFocused = useIsFocused()
   return (
     <View style={styles.container}>
       <Header
-        toggleDrawer={props.navigation.toggleDrawer}
+        toggleDrawer={navigation.toggleDrawer}
         screenName="Confirm"
       />
       <View style={styles.mainView}>

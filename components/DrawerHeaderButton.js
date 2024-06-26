@@ -3,7 +3,6 @@ import { StyleSheet, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 function DrawerHeaderButton(props) {
-  console.log(props)
   return (
     <TouchableOpacity 
     style={[styles.container, props.style]}

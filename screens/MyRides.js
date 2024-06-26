@@ -76,7 +76,9 @@ let dummyData = [
   },
 ];
 //-----------------FOR IMAGES-----------------//
-const MyRides = (props) => {
+const MyRides = ({ navigation, route }) => {
+
+
   const URL = env.URL + env.api_todayrides;
   const [startDay, setStartDay] = useState();
   const [countFirstTime, setCountFirstTime] = useState(false);
@@ -88,15 +90,15 @@ const MyRides = (props) => {
   const [endDayNotification, setEndDayNotification] = useState(false);
   var storedMeterData;
   // // ------This is to refresh when any delivery or pickup is done------//
-  const refreshScreen = props.route.params;
+  const refreshScreen = route.params;
 
 
-  // if (startDay && !endDay && !endDayNotification && listData.length === 0) {
-  //   Alert.alert("End Day", "End Your Day!", [
-  //     { text: "OK", onPress: () => props.navigation.navigate("Meter Reading") },
-  //   ]);
-  //   setEndDayNotification(true);
-  // }
+  if (startDay && !endDay && !endDayNotification && listData.length === 0) {
+    Alert.alert("End Day", "End Your Day!", [
+      { text: "OK", onPress: () => navigation.navigate("Meter Reading") },
+    ]);
+    setEndDayNotification(true);
+  }
 
   async function fetchStoredData() {
     try {
@@ -144,27 +146,18 @@ const MyRides = (props) => {
   const pressCall = (props_call) => (props) => {
     Linking.openURL(`tel://${props_call}`);
   };
-  const changeScreen = (props_screen, props_navigation, item) => (props) => {
+  const changeScreen = (props_screen, item) => (props) => {
     const screenTitle = item.title;
     if (props_screen === "Drop Off") {
-      // console.log({
-      //   screenTitle: screenTitle,
-      //   screenType: "Drop Off",
-      //   orderID: item.order_id.toString(),
-      //   customerID: item.customer_id,
-      //   recentOrders: false,
-      // });
-      props_navigation.navigate("Drop Off", {
-        screen: "DropOffScreen", params: {
-          screenTitle: screenTitle,
-          screenType: "Drop Off",
-          orderID: item.order_id.toString(),
-          customerID: item.customer_id,
-          recentOrders: false,
-        }
+      navigation.navigate("DropOff", {
+        screenTitle: screenTitle,
+        screenType: "DropOff",
+        orderID: item.order_id.toString(),
+        customerID: item.customer_id,
+        recentOrders: false,
       });
     } else if (props_screen === "Pickup") {
-      props_navigation.navigate("Pickup", {
+      navigation.navigate("Pickup", {
         screenTitle: screenTitle,
         orderID: item.order_id.toString(),
         isUserNew: item.isNew,
@@ -174,13 +167,11 @@ const MyRides = (props) => {
         recentOrders: false,
       });
     } else if (props_screen === "Pick & Drop") {
-      props_navigation.navigate("Drop Off", {
-        screen: "DropOffScreen", params: {
-          screenTitle: screenTitle,
-          screenType: "Pick & Drop",
-          orderID: item.order_id.toString(),
-          recentOrders: false,
-        }
+      navigation.navigate("DropOff", {
+        screenTitle: screenTitle,
+        screenType: "Pick & Drop",
+        orderID: item.order_id.toString(),
+        recentOrders: false,
       });
     } else if (props_screen === "To Be Packed") {
     }
@@ -365,7 +356,7 @@ const MyRides = (props) => {
               <Icon name="phone" size={22} style={styles.iconInside} />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={changeScreen(item.buttonService, props.navigation, item)}
+              onPress={changeScreen(item.buttonService, item)}
               style={[styles.BtnInfo, style]}
             >
               <View style={styles.BtnStylingArea}>
@@ -390,8 +381,8 @@ const MyRides = (props) => {
   return (
     <View style={styles.container}>
       <Header
-        toggleDrawer={props.navigation.toggleDrawer}
-        screenName={props.route.name}
+        toggleDrawer={navigation.toggleDrawer}
+        screenName={route.name}
       />
       <View style={styles.mainView}>
         <View style={styles.subContainer}>
@@ -411,7 +402,7 @@ const MyRides = (props) => {
               <TouchableOpacity
                 style={styles.MeterReadingView}
                 onPress={() => {
-                  props.navigation.navigate("MeterReading");
+                  navigation.navigate("MeterReading");
                 }}
               >
                 <Text style={{ color: "white" }}>Start Your Day</Text>

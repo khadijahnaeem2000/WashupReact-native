@@ -47,23 +47,23 @@ const toBePackedURI = Image.resolveAssetSource(toBePackedImage).uri;
 const handImgURI = Image.resolveAssetSource(handImg).uri;
 let selectedURI;
 
-const RecentOrders = (props) => {
-
+const RecentOrders = ({navigation , route}) => {
   const URL = env.URL + env.api_recentorders;
-  const [startDay, setStartDay] = useState();
-  const [endDay, setEndDay] = useState();
+  const refreshScreen = route.params;
+  var storedMeterData;
+
+
   const [selectedId, setSelectedId] = useState(null);
   const [listData, setListData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-  var storedMeterData;
-  const refreshScreen = props.route.params;
+
+
   async function fetchStoredData() {
     let currentDate = new Date();
     let currentDay = currentDate.getDay();
     storedMeterData = await AsyncStorage.getItem("meter");
     storedMeterData = JSON.parse(storedMeterData);
-    setStartDay(storedMeterData.startDay);
-    setEndDay(storedMeterData.endDay);
+
     if (storedMeterData.storedWeekDay != currentDay) {
       //The day has been changed!
       await AsyncStorage.setItem(
@@ -77,44 +77,31 @@ const RecentOrders = (props) => {
     }
   }
   fetchStoredData();
+
   useEffect(() => {
-    try {
       fetchData();
-    } catch (error) {
-      Alert.alert(error);
-      console.log(error);
-    }
   }, [refreshScreen]);
+
   useEffect(() => {
-    try {
       fetchStoredData();
-    } catch (error) {
-      console.log(error);
-    }
   }, [storedMeterData, refreshScreen]);
+
   const onRefresh = useCallback(() => {
-    try {
       fetchData();
-    } catch (e) {
-      console.log(e);
-    }
   }, [refreshing]);
-  // ----------- FUNCTIONS STARTS HERE ---------- //
-  const pressMap = (props_map) => (props) => {
-    console.log(props_map);
-    console.log("Call Pressed!");
+
+  const pressMap = (props_map)  => {
     Linking.openURL(`http://maps.google.com/?daddr=${props_map}`);
   };
-  const pressCall = (props_call) => (props) => {
-    console.log(props_call);
-    console.log("Map Pressed!");
+
+  const pressCall = (props_call) => {
     Linking.openURL(`tel://${props_call}`);
   };
-  const changeScreen = (props_screen, props_navigation, item) => (props) => {
+
+  const changeScreen = (props_screen, item) => {
     const screenTitle = item.title;
     if (props_screen === "Pickup") {
-      console.log("-->Pickup");
-      props_navigation.navigate("Pickup", {
+      navigation.navigate("Pickup", {
         screenTitle: screenTitle,
         orderID: item.order_id.toString(),
         isUserNew: item.isNew,
@@ -125,12 +112,11 @@ const RecentOrders = (props) => {
       });
     }
   };
+
   async function fetchData() {
     const { isConnected } = await NetInfo.fetch();
     storedRiderID = await AsyncStorage.getItem("rider_id");
-    console.log("Rider ID -=-=>", storedRiderID);
     const finalURL = URL + `/${storedRiderID}`;
-    console.log("Fetching Data From:", finalURL);
     if (isConnected) {
       try {
         setRefreshing(true);
@@ -233,7 +219,7 @@ const RecentOrders = (props) => {
               <Icon name="phone" size={22} style={styles.iconInside} />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={changeScreen(item.buttonService, props.navigation, item)}
+              onPress={changeScreen(item.buttonService, item)}
               style={[styles.BtnInfo, style]}
             >
               <View style={styles.BtnStylingArea}>
@@ -257,8 +243,8 @@ const RecentOrders = (props) => {
   return (
     <View style={styles.container}>
       <Header
-        toggleDrawer={props.navigation.toggleDrawer}
-        screenName={props.route.name}
+        toggleDrawer={navigation.toggleDrawer}
+        screenName={route.name}
       />
       <View style={styles.mainView}>
         <View style={styles.subContainer}>

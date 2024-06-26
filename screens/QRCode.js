@@ -11,7 +11,7 @@ import Header from '../components/Header'
 import { CameraView, Camera } from "expo-camera/next";
 
 
-const QRCode = props => {
+const QRCode = ({ navigation, route }) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
 
@@ -28,7 +28,7 @@ const QRCode = props => {
   if (hasPermission === null) {
     return <View style={styles.container}>
       <Header
-        toggleDrawer={props.navigation.toggleDrawer}
+        toggleDrawer={navigation.toggleDrawer}
         screenName="QR Scanner"
       />
       <View style={styles.mainView}>
@@ -39,7 +39,7 @@ const QRCode = props => {
   if (hasPermission === false) {
     return <View style={styles.container}>
       <Header
-        toggleDrawer={props.navigation.toggleDrawer}
+        toggleDrawer={navigation.toggleDrawer}
         screenName="QR Scanner"
       />
       <View style={styles.mainView}>
@@ -51,23 +51,22 @@ const QRCode = props => {
 
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
-    console.log("DATA:", data)
-    console.log(props?.route?.params)
-    console.log("---->", props?.route?.params?.itemData?.polybag_name, data, props?.route?.params?.itemData?.polybag_name == data)
-    if (props?.route?.params?.itemData?.polybag_name == data) {
-      props?.route?.params?.scanQRFunc(data)
+    console.log("route?.params?.itemData" ,route?.params?.itemData)
+    console.log("Yahan ayaayyayay" ,data)
+    if (route?.params?.itemData?.polybag_name == data) {
+      route?.params?.scanQRFunc(data)
       Alert.alert(
         "QR Scan",
         `${data}`,
         [
           {
             text: "Cancel",
-            onPress: () => console.log("Cancel Pressed"),
+            onPress: () => { },
             style: "cancel"
           },
           {
             text: "OK", onPress: () => {
-              props.navigation.goBack()
+              navigation.goBack()
             }
           }
         ],
@@ -75,7 +74,7 @@ const QRCode = props => {
       );
 
     } else {
-      props?.route?.params?.scanQRFunc(null)
+      route?.params?.scanQRFunc(null)
       Alert.alert("Wrong QR Code Scanned!!", data)
     }
   }
@@ -83,7 +82,7 @@ const QRCode = props => {
   if (hasPermission === null) {
     return <View style={styles.container}>
       <Header
-        toggleDrawer={props.navigation.toggleDrawer}
+        toggleDrawer={navigation.toggleDrawer}
         screenName="QR Scanner"
       />
       <View style={styles.mainView}>
@@ -94,7 +93,7 @@ const QRCode = props => {
   if (hasPermission === false) {
     return <View style={styles.container}>
       <Header
-        toggleDrawer={props.navigation.toggleDrawer}
+        toggleDrawer={navigation.toggleDrawer}
         screenName="QR Scanner"
       />
       <View style={styles.mainView}>

@@ -2,6 +2,11 @@
   "cli": {
     "version": ">= 7.6.0"
   },
+  "production": {
+    "env": {
+      "API_URL": "https://washup.com.pk/"
+    }
+  },
   "build": {
     "development": {
       "developmentClient": true,

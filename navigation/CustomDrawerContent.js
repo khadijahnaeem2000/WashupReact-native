@@ -123,7 +123,7 @@ function CustomDrawerContent(props) {
             />
             <DrawerItem
                 label={"Payment Only Rides"}
-                onPress={() => props.navigation.navigate("PaymentOnlyRides")}
+                onPress={() => props.navigation.navigate("CollectPayment")}
             />
             <DrawerItem
                 label={"Recent Orders"}

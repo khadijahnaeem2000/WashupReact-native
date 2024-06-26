@@ -19,7 +19,6 @@ const ImgPicker = (props) => {
   const takePhotoHandler = async () => {
   
     let image = await ImagePicker.launchCameraAsync();
-    console.log("Captured image:", image); // Log captured image object
     if (!image.cancelled) {
       // Check if image capture was cancelled
       try {
@@ -31,7 +30,6 @@ const ImgPicker = (props) => {
             [{ resize: { width: 200, height: 200 } }],
             { compress: 0, format: ImageManipulator.SaveFormat.PNG }
           );
-          console.log("Manipulated image:", image); // Log manipulated image object
           setPickedImage(image.uri);
           props.onImageTaken(image.uri);
         } else {

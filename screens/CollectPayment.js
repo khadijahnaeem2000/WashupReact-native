@@ -27,27 +27,25 @@ import { env } from "../env";
 import { useFocusEffect } from "@react-navigation/native";
 
 async function fetchWithTimeout(url, options, timeout) {
-    return new Promise(async (resolve, reject) => {
-        const timeoutId = setTimeout(() => {
-            reject(new Error('Request Timeout'));
-        }, timeout);
+  return new Promise(async (resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      reject(new Error('Request Timeout'));
+    }, timeout);
 
-        try {
-            const response = await fetch(url, options);
-            clearTimeout(timeoutId);
-            resolve(response);
-        } catch (error) {
-            clearTimeout(timeoutId);
-            reject(error);
-        }
-    });
+    try {
+      const response = await fetch(url, options);
+      clearTimeout(timeoutId);
+      resolve(response);
+    } catch (error) {
+      clearTimeout(timeoutId);
+      reject(error);
+    }
+  });
 }
 
-//-----------------FOR IMAGES-----------------//
 const handImgURI = Image.resolveAssetSource(handImg).uri;
-//-----------------FOR IMAGES-----------------//
 
-const CollectPayment = (props) => {
+const CollectPayment = ({ navigation }) => {
 
   const URL = env.URL + env.api_collectpayment;
   const [selectedId, setSelectedId] = useState(null);
@@ -80,7 +78,6 @@ const CollectPayment = (props) => {
       });
     responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log(response);
       });
     return () => {
       Notifications.removeNotificationSubscription(notificationListener);
@@ -113,7 +110,6 @@ const CollectPayment = (props) => {
         return;
       }
       token = (await Notifications.getExpoPushTokenAsync()).data;
-      console.log(token);
     } else {
       alert("Must use physical device for Push Notifications");
     }
@@ -127,31 +123,20 @@ const CollectPayment = (props) => {
     }
     return token;
   }
-  //----------------------------------------------------------------------------------------//
-  // useEffect(() => {
-   
-  // }, []);
 
-useFocusEffect(
-  useCallback(() => {
-    try {
-      fetchData();
-    } catch (error) {
-      console.log(error);
-    }
-  },[])
-)
-
-
+  useFocusEffect(
+    useCallback(() => {
+        fetchData();
+    }, [])
+  )
 
   const onRefresh = useCallback(() => {
     try {
       fetchData();
     } catch (e) {
-      console.log(e);
     }
   }, [refreshing]);
-  // ----------- FUNCTIONS STARTS HERE ---------- //
+
   const showDialog = (param, item) => {
     setCurrentItem(item);
     setVisible(true);
@@ -167,10 +152,6 @@ useFocusEffect(
   };
   const handleConfirm = async () => {
     storedRiderID = await AsyncStorage.getItem("rider_id");
-    console.log("Rider ID -=-=>", storedRiderID);
-    console.log("Recieved Amount: ", recievedAmount);
-    console.log(currentItem);
-    console.log(recievedAmount);
     if (isNaN(recievedAmount)) {
       alert("Type Numbers only!");
       return;
@@ -205,7 +186,6 @@ useFocusEffect(
       const paymentResponseJSON = await paymentResponse.json();
       setRefreshing(false);
       setListData(paymentResponseJSON.data);
-      console.log(paymentResponseJSON);
       if (paymentResponseJSON.status == "success") {
         alert("Data Sent!");
         setRefreshing(false);
@@ -215,38 +195,28 @@ useFocusEffect(
         setRefreshing(false);
       }
     } catch (error) {
-      console.log("--000--");
       error = "Request Timeout, Check Your Connection"
         ? alert("Request Timeout, Check Your Connection")
         : alert("Server Error!");
-      console.log(error);
-      console.log("--001--");
       setRefreshing(false);
     }
     setVisible(false);
   };
-  const pressMap = (props_map) => (props) => {
-    console.log(props_map);
-    console.log("Call Pressed!");
+  const pressMap = (props_map) => {
     Linking.openURL(`http://maps.google.com/?daddr=${props_map}`);
   };
-  const pressCall = (props_call) => (props) => {
-    console.log(props_call);
-    console.log("Map Pressed!");
+  const pressCall = (props_call) => {
     Linking.openURL(`tel://${props_call}`);
   };
   async function fetchData() {
     const { isConnected } = await NetInfo.fetch();
     storedRiderID = await AsyncStorage.getItem("rider_id");
-    console.log("Rider ID -=-=>", storedRiderID);
     const finalURL = URL + `/${storedRiderID}`;
-    console.log("Fetching Data From:", finalURL);
     if (isConnected) {
       try {
         setRefreshing(true);
         savedToken = await SecureStore.getItemAsync("token");
         savedToken = savedToken.substring(1, savedToken.length - 1);
-        console.log("Token --> ", savedToken, typeof savedToken);
         let myHeaders = new Headers();
         myHeaders.append("Accept", "application/json");
         myHeaders.append("Authorization", `Bearer ${savedToken}`);
@@ -263,17 +233,13 @@ useFocusEffect(
         );
         setRefreshing(false);
         let responseJson = await response.json();
-        // console.log(responseJson);
         setListData(responseJson);
 
         setRefreshing(false);
       } catch (error) {
-        console.log("--000--");
         error = "Request Timeout, Check Your Connection"
           ? alert("Request Timeout, Check Your Connection")
           : alert("Server Error!");
-        console.log(error);
-        console.log("--001--");
         setRefreshing(false);
       }
     } else {
@@ -301,9 +267,8 @@ useFocusEffect(
     }
   }
   fetchStoredData();
-  // ----------- FUNCTIONS ENDS HERE ------------//
+
   const renderItem = ({ item }) => {
-    // console.log(item)
     return (
       <Item
         item={item}
@@ -312,6 +277,7 @@ useFocusEffect(
       />
     );
   };
+
   const Item = ({ item, onPress, style }) => {
     let boxStyle;
     if (item.cash != 0) {
@@ -369,7 +335,6 @@ useFocusEffect(
             </TouchableOpacity>
             <TouchableOpacity
               onPress={(param) => {
-                console.log("paramss" , param)
                 // showDialog(param, item)
               }}
               style={[styles.BtnInfo, style]}
@@ -383,11 +348,12 @@ useFocusEffect(
         </TouchableOpacity>
       );
   };
+
   if (visible) {
     return (
       <View style={styles.container}>
         <Header
-          toggleDrawer={props.navigation.toggleDrawer}
+          toggleDrawer={navigation.toggleDrawer}
           screenName="Payment Only Rides"
         />
         <Dialog.Container visible={visible}>
@@ -416,11 +382,12 @@ useFocusEffect(
       </View>
     );
   }
+
   if (refreshing) {
     return (
       <View style={styles.container}>
         <Header
-          toggleDrawer={props.navigation.toggleDrawer}
+          toggleDrawer={navigation.toggleDrawer}
           screenName="Payment Only Rides"
         />
         <View style={styles.mainView}>
@@ -432,8 +399,8 @@ useFocusEffect(
   return (
     <View style={styles.container}>
       <Header
-        toggleDrawer={props.navigation.toggleDrawer}
-        screenName={props.route.name}
+        toggleDrawer={navigation.toggleDrawer}
+        screenName={"Payment Only Rides"}
       />
       <View style={styles.mainView}>
         <SafeAreaView style={styles.container}>

@@ -16,8 +16,6 @@ const initialState = {
   export default (state = initialState, action) => {
     switch (action.type) {
     case DASHBOARD:
-        console.log("WASHUP REDUCER : DASHBOARD")
-        console.log(state)
         state = {
             ...state
         }

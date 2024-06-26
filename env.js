@@ -1,6 +1,9 @@
+import getEnvVars from "./enviroment";
+
 export const env = {
   //  URL: "http://app.washup.com.pk/",
-  URL: "https://dev.washup.com.pk/",
+  // URL: getEnvVars()?.apiUrl,
+  URL: 'https://dev.washup.com.pk/',
   api_login: "api/login",
   api_logout: "api/logout",
   api_forgot: "api/forgot",
@@ -15,7 +18,7 @@ export const env = {
   api_confirmpickupservice: "api/store_items",
   api_confirmpickup: "api/confirmpickup",
   api_addanotherorder: "api/addanotherorder",
-  api_ordercancel:"api/noMoreOrder",
+  api_ordercancel: "api/noMoreOrder",
   api_cancel: "api/cancel",
   api_collectpayment: "api/paymentonlyrides",
   api_collectpaymentsubmit: "api/paymentonlyridessubmit",
