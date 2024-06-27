@@ -42,8 +42,8 @@ const Pickup = ({ navigation, route }) => {
   let responsePickup;
   var orderID;
   const URL = env.URL + env.api_pickup;
-  const { isUserNew, addressID } = route?.params;
-
+  const { isUserNew, addressID, isNew } = route?.params;
+console.log("isNewwwww" , isNew)
 
   const [selectedId, setSelectedId] = useState(null);
   const [listData, setListData] = useState([]);
@@ -82,7 +82,8 @@ const Pickup = ({ navigation, route }) => {
       }
     })();
   }, []);
- 
+
+
   async function fetchData() {
     const { isConnected } = await NetInfo.fetch();
     if (route?.params?.pickdropdata) {
@@ -195,25 +196,27 @@ const Pickup = ({ navigation, route }) => {
 
   const renderItemPrice = ({ item }) => {
     return (
-        <View style={styles.serviceContainer}>
-          <Text style={styles.TableTitle}>{item.service_name}</Text>
-          <View style={styles.ChildServiceDetails}>
-            <View style={styles.column_inner}>
-              <Text style={styles.TableTitle}>Pieces</Text>
-              <Text>{item.pieces}</Text>
-            </View>
-            <View style={[styles.column_inner, styles.bordered]}>
-              <Text style={styles.TableTitle}>KG</Text>
-              <Text>{item.KG.toFixed(2)}</Text>
-            </View>
-            <View style={styles.column_inner}>
-              <Text style={styles.TableTitle}>Price</Text>
-              <Text>{item.price.toFixed(2)}</Text>
-            </View>
+      <View style={styles.serviceContainer}>
+        <Text style={styles.TableTitle}>{item.service_name}</Text>
+        <View style={styles.ChildServiceDetails}>
+          <View style={styles.column_inner}>
+            <Text style={styles.TableTitle}>Pieces</Text>
+            <Text>{item.pieces}</Text>
+          </View>
+          <View style={[styles.column_inner, styles.bordered]}>
+            <Text style={styles.TableTitle}>KG</Text>
+            <Text>{item.KG.toFixed(2)}</Text>
+          </View>
+          <View style={styles.column_inner}>
+            <Text style={styles.TableTitle}>Price</Text>
+            <Text>{item.price.toFixed(2)}</Text>
           </View>
         </View>
+      </View>
     );
   };
+
+  console.log("fullData" ,fullData)
 
   return (
     <View style={styles.container}>

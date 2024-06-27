@@ -21,7 +21,10 @@ const DashboardStack = () => {
     return (
         <Stack.Navigator
             initialRouteName="Dashboard"
-            screenOptions={{ headerShown: false }}
+            screenOptions={{
+                headerShown: false,
+                unmountOnBlur: true
+            }}
         >
             <Stack.Screen name="Dashboard" component={Dashboard} />
             <Stack.Screen name="MeterReading" component={MeterReading} />

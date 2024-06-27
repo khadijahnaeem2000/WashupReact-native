@@ -241,9 +241,14 @@ const DropOff = ({ navigation, route }) => {
         response = await response.json();
         setRefreshing(false);
         navigation.navigate("Pickup", {
-          pickdropdata: response,
+          isNew:true,
+          // pickdropdata: response,
+          isNew: true,
           screenTitle: response.title,
           orderID: response.order_id,
+          pickdropdata: null,
+          recentOrders: false,
+          isUserNew: true,
         });
       } catch (error) {
         setRefreshing(false);
@@ -317,11 +322,7 @@ const DropOff = ({ navigation, route }) => {
           alert("Data Sent!");
           setRefreshing(false);
           schedulePushNotification();
-          navigation.navigate("Pickup", {
-            pickdropdata: paymentResponse.data.original,
-            screenTitle: paymentResponse.data.original.title,
-            orderID: paymentResponse.data.original.order_id,
-          });
+          navigation.navigate("MyRides");
         } else if (paymentResponse.status === 'failed') {
           alert(paymentResponse.error);
           setRefreshing(false);

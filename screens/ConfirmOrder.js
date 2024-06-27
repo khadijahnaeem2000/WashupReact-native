@@ -38,8 +38,8 @@ async function fetchWithTimeout(url, options, timeout) {
 }
 
 
-const ConfirmOrder = ({navigation , route}) => {
-  const {order_id , customer_name , customer_id , order_note , rider_id , location , isUserNew , addressID , recentOrders} = route.params;
+const ConfirmOrder = ({ navigation, route }) => {
+  const { order_id, customer_name, customer_id, order_note, rider_id, location, isUserNew, addressID, recentOrders } = route.params;
   const isFocused = useIsFocused()
   const notificationListener = useRef();
   const responseListener = useRef();
@@ -184,7 +184,7 @@ const ConfirmOrder = ({navigation , route}) => {
       "Please Wait",
       [
         {
-         
+
         },
       ],
       { cancelable: false }
@@ -267,9 +267,12 @@ const ConfirmOrder = ({navigation , route}) => {
         response = await response?.json();
         // setEnableYes(false);
         navigation.navigate("Pickup", {
-          pickdropdata: response,
+          isNew: true,
           screenTitle: response.title,
           orderID: response.order_id,
+          pickdropdata: null,
+          recentOrders: false,
+          isUserNew: true,
         });
         setRefreshing(false);
       } catch (error) {
@@ -343,7 +346,7 @@ const ConfirmOrder = ({navigation , route}) => {
             if (isDataSent) {
               fetchnodata()
             } else {
-              navigation.goBack()
+              navigation.navigate('MyRides')
             }
           }
         },
