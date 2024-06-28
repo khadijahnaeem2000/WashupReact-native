@@ -43,7 +43,7 @@ const Pickup = ({ navigation, route }) => {
   var orderID;
   const URL = env.URL + env.api_pickup;
   const { isUserNew, addressID, isNew } = route?.params;
-console.log("isNewwwww" , isNew)
+  console.log("isNewwwww", isNew)
 
   const [selectedId, setSelectedId] = useState(null);
   const [listData, setListData] = useState([]);
@@ -118,7 +118,7 @@ console.log("isNewwwww" , isNew)
         setRefreshing(false);
         responsePickup = await response.json();
         orderID = responsePickup.order_id;
-        console.log("responsePickup.Services" ,responsePickup.Services?.[0])
+        console.log("responsePickup.Services", responsePickup.Services?.[0])
         setListData(responsePickup.Services);
         setScreenTitle(responsePickup.title);
         setFullData(responsePickup);
@@ -136,7 +136,15 @@ console.log("isNewwwww" , isNew)
     }
   }
 
-  useFocusEffect(useCallback(() => fetchData(), []))
+  useFocusEffect(useCallback(() => {
+    if (isNew) {
+      setTimeout(() => {
+        fetchData()
+      }, 1500);
+    } else {
+      fetchData()
+    }
+  }, [isNew]))
 
 
   if (refreshing) {

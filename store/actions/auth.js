@@ -78,8 +78,6 @@ export const signOut = () => {
 }
 export const signIn = (email, password) => {
     URL_SignIn = env.URL + env.api_login
-    console.log("URL_SignIn", URL_SignIn)
-    alert(URL_SignIn)
     return async dispatch => {
 
         dispatch({ type: REFRESHING, payload: true })

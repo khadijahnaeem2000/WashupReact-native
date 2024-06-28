@@ -1,6 +1,4 @@
 const IS_DEV = process.env.NODE_ENV === 'development' || process.env.APP_VARIANT === 'development';
-console.log("IS_DEV", IS_DEV, process.env.NODE_ENV)
-alert(JSON.stringify(process.env))
 export const env = {
   //  URL: "http://app.washup.com.pk/",
   // URL: getEnvVars()?.apiUrl,

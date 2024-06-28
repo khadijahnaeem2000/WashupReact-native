@@ -109,7 +109,9 @@ const ConfirmOrder = ({ navigation, route }) => {
         alert("Failed to get push token for push notification!");
         return;
       }
-      token = (await Notifications.getExpoPushTokenAsync()).data;
+      token = (await Notifications.getExpoPushTokenAsync({
+        projectId: process.env.NODE_ENV === 'development' ? "com.shameel123.WashupMobileApp.dev" : "com.shameel123.WashupMobileApp"
+      })).data;
     } else {
       alert("Must use physical device for Push Notifications");
     }
@@ -267,12 +269,10 @@ const ConfirmOrder = ({ navigation, route }) => {
         response = await response?.json();
         // setEnableYes(false);
         navigation.navigate("Pickup", {
-          isNew: true,
+          pickdropdata: response,
           screenTitle: response.title,
-          orderID: response?.order_id,
-          pickdropdata: null,
-          recentOrders: false,
-          isUserNew: true,
+          orderID: response.order_id,
+          isNew:true
         });
         setRefreshing(false);
       } catch (error) {

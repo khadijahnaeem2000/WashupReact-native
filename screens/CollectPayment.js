@@ -109,7 +109,9 @@ const CollectPayment = ({ navigation }) => {
         alert("Failed to get push token for push notification!");
         return;
       }
-      token = (await Notifications.getExpoPushTokenAsync()).data;
+      token = (await Notifications.getExpoPushTokenAsync({
+        projectId: process.env.NODE_ENV === 'development' ? "com.shameel123.WashupMobileApp.dev" : "com.shameel123.WashupMobileApp"
+      })).data;
     } else {
       alert("Must use physical device for Push Notifications");
     }
@@ -126,7 +128,7 @@ const CollectPayment = ({ navigation }) => {
 
   useFocusEffect(
     useCallback(() => {
-        fetchData();
+      fetchData();
     }, [])
   )
 
