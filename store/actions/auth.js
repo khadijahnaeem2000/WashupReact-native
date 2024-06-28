@@ -78,6 +78,8 @@ export const signOut = () => {
 }
 export const signIn = (email, password) => {
     URL_SignIn = env.URL + env.api_login
+    console.log("URL_SignIn", URL_SignIn)
+    alert(URL_SignIn)
     return async dispatch => {
 
         dispatch({ type: REFRESHING, payload: true })
@@ -94,78 +96,84 @@ export const signIn = (email, password) => {
                 })
             }, 10000, MAX_RETRIES);
             try {
-                let json = await response.json();
+                if (response?.ok) {
+                    let json = await response.json();
+                    try {
+                        await SecureStore.setItemAsync(
+                            'token',
+                            JSON.stringify(json.token)
+                        );
+                    }
+                    catch (err) {
+                        dispatch({ type: REFRESHING, payload: false })
+                    }
 
-                try {
-                    await SecureStore.setItemAsync(
-                        'token',
-                        JSON.stringify(json.token)
-                    );
-                }
-                catch (err) {
-                    dispatch({ type: REFRESHING, payload: false })
+                    try {
+                        await AsyncStorage.setItem(
+                            'email',
+                            JSON.stringify(json.username)
+                        );
+
+                    }
+                    catch (err) {
+                        dispatch({ type: REFRESHING, payload: false })
+                    }
+
+                    try {
+                        await AsyncStorage.setItem(
+                            'rider_id',
+                            JSON.stringify(json.rider_id)
+                        );
+
+                    }
+                    catch (err) {
+                        dispatch({ type: REFRESHING, payload: false })
+                    }
+
+                    try {
+                        let savedToken = await SecureStore.getItemAsync('token');
+                        savedToken = savedToken.substring(1, savedToken.length - 1);
+                        storedRiderID = await AsyncStorage.getItem('rider_id')
+                        let myHeaders = new Headers();
+                        myHeaders.append("Accept", "application/json");
+                        myHeaders.append("Authorization", `Bearer ${savedToken}`);
+
+                        let requestOptions = {
+                            method: 'GET',
+                            headers: myHeaders,
+                            redirect: 'follow'
+                        };
+                        let URLMeter = env.URL + env.api_daystatus
+                        let finalURL = `${URLMeter}/${storedRiderID}`
+                        let response = await fetchWithTimeout(
+                            finalURL, requestOptions, 10000, 'Request Timeout, Check Your Connection'
+                        );
+                        response = await response.json();
+                        await AsyncStorage.setItem(
+                            'meter',
+                            JSON.stringify({ startDay: response.startDay, endDay: response.endDay })
+                        );
+                    }
+                    catch (err) {
+                        dispatch({ type: REFRESHING, payload: false })
+                    }
+
+                    if (json.status === "success") {
+                        dispatch({ type: SIGN_IN, payload: true })
+                        dispatch({ type: REFRESHING, payload: false })
+                    }
+                    else {
+                        alert("Login Failed! Wrong Username or Password!'")
+                        dispatch({ type: SIGN_IN_ERROR, payload: 'Wrong Username or Password!' })
+                    }
+                } else {
+                    dispatch({ type: SIGN_IN_ERROR, payload: 'User Not Found!' })
+                    console.log("Error Responeee", response?.status, response?.message)
                 }
 
-                try {
-                    await AsyncStorage.setItem(
-                        'email',
-                        JSON.stringify(json.username)
-                    );
-
-                }
-                catch (err) {
-                    dispatch({ type: REFRESHING, payload: false })
-                }
-
-                try {
-                    await AsyncStorage.setItem(
-                        'rider_id',
-                        JSON.stringify(json.rider_id)
-                    );
-
-                }
-                catch (err) {
-                    dispatch({ type: REFRESHING, payload: false })
-                }
-
-                try {
-                    let savedToken = await SecureStore.getItemAsync('token');
-                    savedToken = savedToken.substring(1, savedToken.length - 1);
-                    storedRiderID = await AsyncStorage.getItem('rider_id')
-                    let myHeaders = new Headers();
-                    myHeaders.append("Accept", "application/json");
-                    myHeaders.append("Authorization", `Bearer ${savedToken}`);
-
-                    let requestOptions = {
-                        method: 'GET',
-                        headers: myHeaders,
-                        redirect: 'follow'
-                    };
-                    let URLMeter = env.URL + env.api_daystatus
-                    let finalURL = `${URLMeter}/${storedRiderID}`
-                    let response = await fetchWithTimeout(
-                        finalURL, requestOptions, 10000, 'Request Timeout, Check Your Connection'
-                    );
-                    response = await response.json();
-                    await AsyncStorage.setItem(
-                        'meter',
-                        JSON.stringify({ startDay: response.startDay, endDay: response.endDay })
-                    );
-                }
-                catch (err) {
-                    dispatch({ type: REFRESHING, payload: false })
-                }
-
-                if (json.status === "success") {
-                    dispatch({ type: SIGN_IN, payload: true })
-                    dispatch({ type: REFRESHING, payload: false })
-                }
-                else {
-                    alert("Login Failed! Wrong Username or Password!'")
-                    dispatch({ type: SIGN_IN_ERROR, payload: 'Wrong Username or Password!' })
-                }
             }
             catch (err) {
+                console.log("errrrrrr", err)
                 alert("Server Error!")
                 dispatch({ type: REFRESHING, payload: false })
             }

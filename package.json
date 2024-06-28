@@ -3,6 +3,8 @@
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
+    "dev": "APP_VARIANT=development npx expo start",
+    "prod": "APP_VARIANT=production npx expo start",
     "ios": "expo run:ios",
     "web": "expo start --web",
     "eject": "expo eject"

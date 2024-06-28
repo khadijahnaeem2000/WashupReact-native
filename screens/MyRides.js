@@ -157,6 +157,15 @@ const MyRides = ({ navigation, route }) => {
         recentOrders: false,
       });
     } else if (props_screen === "Pickup") {
+      console.log("Objjejcttt" ,{
+        screenTitle: screenTitle,
+        orderID: item.order_id.toString(),
+        isUserNew: item.isNew,
+        addressID: item.address_id, //required at backend
+        customerID: item.customer_id,
+        pickdropdata: null,
+        recentOrders: false,
+      })
       navigation.navigate("Pickup", {
         screenTitle: screenTitle,
         orderID: item.order_id.toString(),

@@ -269,7 +269,7 @@ const ConfirmOrder = ({ navigation, route }) => {
         navigation.navigate("Pickup", {
           isNew: true,
           screenTitle: response.title,
-          orderID: response.order_id,
+          orderID: response?.order_id,
           pickdropdata: null,
           recentOrders: false,
           isUserNew: true,

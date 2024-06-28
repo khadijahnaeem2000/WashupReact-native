@@ -17,15 +17,15 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "no"
+      "bundleIdentifier": "no",
+      "supportsTablet": true
     },
     "android": {
+      "package": "com.shameel123.WashupMobileApp",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      },
-      "package": "com.shameel123.WashupMobileApp"
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"

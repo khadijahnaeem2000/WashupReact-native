@@ -33,6 +33,7 @@ const SignInScreen = () => {
     stateForStyle = state
     const dispatch = useDispatch();
     const handleFogottenPassword = () => {  }
+    
     const handleSignIn = () => {
         if (!netInfo.isConnected) {
             Alert.alert("Internet Error!")
@@ -61,6 +62,7 @@ const SignInScreen = () => {
             </View>
         )
     }
+
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} styles={styles.container}>
             <View style={styles.container} >

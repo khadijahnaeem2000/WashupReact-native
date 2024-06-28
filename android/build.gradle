@@ -4,10 +4,9 @@ buildscript {
     ext {
         buildToolsVersion = findProperty('android.buildToolsVersion') ?: '34.0.0'
         minSdkVersion =21
-    compileSdkVersion = 34 // Set to the appropriate version you're targeting
+        compileSdkVersion = 34 // Set to the appropriate version you're targeting
         targetSdkVersion = 34
         kotlinVersion = findProperty('android.kotlinVersion') ?: '1.8.10'
-
         ndkVersion = "25.1.8937393"
     }
     repositories {

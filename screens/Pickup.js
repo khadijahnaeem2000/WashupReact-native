@@ -118,6 +118,7 @@ console.log("isNewwwww" , isNew)
         setRefreshing(false);
         responsePickup = await response.json();
         orderID = responsePickup.order_id;
+        console.log("responsePickup.Services" ,responsePickup.Services?.[0])
         setListData(responsePickup.Services);
         setScreenTitle(responsePickup.title);
         setFullData(responsePickup);
@@ -215,8 +216,6 @@ console.log("isNewwwww" , isNew)
       </View>
     );
   };
-
-  console.log("fullData" ,fullData)
 
   return (
     <View style={styles.container}>

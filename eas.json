@@ -2,15 +2,20 @@
   "cli": {
     "version": ">= 7.6.0"
   },
-  "production": {
-    "env": {
-      "API_URL": "https://washup.com.pk/"
-    }
-  },
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "android": {
+        "gradleCommand": ":app:assembleDevelopmentDebug"
+      },
+      "env": {
+        "APP_VARIANT": "development"
+      }
+    },
+    "production": {
+      "android": {
+        "gradleCommand": ":app:assembleProductionRelease"
+      }
     },
     "preview": {
       "android": {
@@ -27,8 +32,7 @@
     },
     "preview4": {
       "distribution": "internal"
-    },
-    "production": {}
+    }
   },
   "submit": {
     "production": {}
