@@ -86,6 +86,7 @@ function UploadMeterPhoto(props) {
           form.append("type", props.meterReadingType);
           form.append("reading", props.meterReadingValue);
 
+
           let savedToken = await SecureStore.getItemAsync("token");
           savedToken = savedToken.substring(1, savedToken.length - 1);
 

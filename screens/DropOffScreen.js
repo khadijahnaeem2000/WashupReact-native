@@ -363,13 +363,10 @@ const DropOff = ({ navigation, route }) => {
 
 
     const scanQRFunc = (qrData) => {
-      console.log("QR DATaaaaa", qrData)
       item.polybag_qr = qrData;
       for (let key in listData.polybag_items) {
-        console.log("Poly bag keeyyssysysyysysy", listData.polybag_items[key], listData.polybag_items[key]["polybag_qr"])
         listData.polybag_items[key]["polybag_qr"] ? (countQRScans += 1) : null;
       }
-      console.log("listData", listData.polybag, countQRScans)
       if (countQRScans === parseInt(listData.polybag)) {
         QRScanHeading = [styles.TapableBox, styles.ScanTapperGreen];
         setAllQRscanned(true);
@@ -378,12 +375,9 @@ const DropOff = ({ navigation, route }) => {
       QRState ? setQRState(false) : setQRState(true);
     };
     let colorQR = null;
-    console.log("item.polybag_qr", item.polybag_qr)
     item.polybag_qr
       ? (colorQR = [styles.ScanTapper, styles.ScanTapperGreen])
       : (colorQR = [styles.ScanTapper]);
-
-    console.log("colorQR", colorQR)
     return (
       <View style={styles.RowData}>
         <Text style={[styles.RowText, styles.RowTextCol2]}>

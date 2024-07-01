@@ -74,7 +74,6 @@ const QRCode = ({ navigation, route }) => {
       );
 
     } else {
-      route?.params?.scanQRFunc(null)
       Alert.alert("Wrong QR Code Scanned!!", data)
     }
   }
