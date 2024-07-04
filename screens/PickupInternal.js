@@ -275,7 +275,11 @@ const PickupInternal = ({ navigation, route }) => {
           PickupInternalScreenUpdated
             ? setPickupInternalScreenUpdated(false)
             : setPickupInternalScreenUpdated(true);
-          navigation.goBack()
+          navigation.navigate("Pickup", {
+            pickdropdata: null,
+            screenTitle: null,
+            orderID: order_id,
+          });
           setRefreshing(true);
         } else {
           Alert.alert("Server Error! Data Not Sent!");

@@ -207,13 +207,13 @@ const RecentOrders = ({navigation , route}) => {
           </Text>
           <View style={styles.InlineBlock}>
             <TouchableOpacity
-              onPress={pressMap(item.buttonMap)}
+              onPress={() => pressMap(item.buttonMap)}
               style={[styles.IconSocial, style]}
             >
               <Icon name="map-marker" size={22} style={styles.iconInside} />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={pressCall(item.buttonCall)}
+              onPress={() =>pressCall(item.buttonCall)}
               style={[styles.IconSocial, style]}
             >
               <Icon name="phone" size={22} style={styles.iconInside} />

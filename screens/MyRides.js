@@ -91,11 +91,11 @@ const MyRides = ({ navigation, route }) => {
   var storedMeterData;
   // // ------This is to refresh when any delivery or pickup is done------//
   const refreshScreen = route.params;
+console.log("startDay " ,startDay , endDay , endDayNotification , listData?.length)
 
-
-  if (startDay && !endDay && !endDayNotification && listData.length === 0) {
+  if (startDay && !endDay && !endDayNotification && listData?.length === 0) {
     Alert.alert("End Day", "End Your Day!", [
-      { text: "OK", onPress: () => navigation.navigate("Meter Reading") },
+      { text: "OK", onPress: () => navigation.navigate("MeterReading") },
     ]);
     setEndDayNotification(true);
   }
@@ -157,15 +157,7 @@ const MyRides = ({ navigation, route }) => {
         recentOrders: false,
       });
     } else if (props_screen === "Pickup") {
-      console.log("Objjejcttt" ,{
-        screenTitle: screenTitle,
-        orderID: item.order_id.toString(),
-        isUserNew: item.isNew,
-        addressID: item.address_id, //required at backend
-        customerID: item.customer_id,
-        pickdropdata: null,
-        recentOrders: false,
-      })
+      
       navigation.navigate("Pickup", {
         screenTitle: screenTitle,
         orderID: item.order_id.toString(),
@@ -181,6 +173,7 @@ const MyRides = ({ navigation, route }) => {
         screenType: "Pick & Drop",
         orderID: item.order_id.toString(),
         recentOrders: false,
+        customerID: item.customer_id,
       });
     } else if (props_screen === "To Be Packed") {
     }
@@ -190,6 +183,7 @@ const MyRides = ({ navigation, route }) => {
     const { isConnected } = await NetInfo.fetch();
     storedRiderID = await AsyncStorage.getItem("rider_id");
     const finalURL = URL + `/${storedRiderID}`;
+    console.log("finalURL" ,finalURL)
     if (isConnected) {
       try {
         setRefreshing(true);

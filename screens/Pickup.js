@@ -40,10 +40,8 @@ async function fetchWithTimeout(url, options, timeout) {
 
 const Pickup = ({ navigation, route }) => {
   let responsePickup;
-  var orderID;
   const URL = env.URL + env.api_pickup;
-  const { isUserNew, addressID, isNew } = route?.params;
-  console.log("isNewwwww", isNew)
+  const { isUserNew, addressID, pickdropdata, orderID } = route?.params;
 
   const [selectedId, setSelectedId] = useState(null);
   const [listData, setListData] = useState([]);
@@ -52,7 +50,7 @@ const Pickup = ({ navigation, route }) => {
   const [screenTitle, setScreenTitle] = useState("Pickup");
   const [note, setNote] = useState("");
   const [permenantNote, setPermenantNote] = useState("");
-  const [refreshing, setRefreshing] = useState(false);
+  const [refreshing, setRefreshing] = useState(true);
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
 
@@ -86,16 +84,12 @@ const Pickup = ({ navigation, route }) => {
 
   async function fetchData() {
     const { isConnected } = await NetInfo.fetch();
-    if (route?.params?.pickdropdata) {
-      responsePickup = route?.params?.pickdropdata;
-      orderID = route?.params?.pickdropdata?.order_id;
-      setScreenTitle(route?.params?.pickdropdata?.title);
-    } else {
-      setScreenTitle(route?.params?.screenTitle);
-      orderID = route?.params?.orderID;
-    }
+
+    setScreenTitle(pickdropdata?.title || route?.params?.screenTitle);
     storedRiderID = await AsyncStorage.getItem("rider_id");
-    const finalURL = URL + `/${storedRiderID}/${orderID}`;
+
+    const finalURL = URL + `/${storedRiderID}/${pickdropdata?.order_id || orderID}`;
+    console.log("final YURllll", finalURL)
     if (isConnected) {
       try {
         setRefreshing(true);
@@ -117,8 +111,6 @@ const Pickup = ({ navigation, route }) => {
         );
         setRefreshing(false);
         responsePickup = await response.json();
-        orderID = responsePickup.order_id;
-        console.log("responsePickup.Services", responsePickup.Services?.[0])
         setListData(responsePickup.Services);
         setScreenTitle(responsePickup.title);
         setFullData(responsePickup);
@@ -136,15 +128,26 @@ const Pickup = ({ navigation, route }) => {
     }
   }
 
-  useFocusEffect(useCallback(() => {
-    if (isNew) {
+  const checkData = () => {
+    console.log("pickdropdata?.order_id", pickdropdata?.order_id)
+    if (pickdropdata?.order_id) {
+      setRefreshing(true)
+      setListData(pickdropdata?.Services);
+      setScreenTitle(pickdropdata?.title);
+      setFullData(pickdropdata);
+      setPermenantNote(pickdropdata?.PermenantNote);
+      setNote(pickdropdata?.Note);
       setTimeout(() => {
-        fetchData()
-      }, 1500);
+        setRefreshing(false)
+      }, 1000);
     } else {
       fetchData()
     }
-  }, [isNew]))
+  }
+
+
+
+  useFocusEffect(useCallback(() => checkData(), [pickdropdata]))
 
 
   if (refreshing) {
@@ -169,17 +172,12 @@ const Pickup = ({ navigation, route }) => {
       : (itemStyle = [styles.item]);
 
     const changeScreen = (itemData) => {
-      if (route.params.pickdropdata) {
-        orderID = route.params.pickdropdata?.order_id;
-      } else {
-        orderID = route.params.orderID;
-      }
       try {
         navigation.navigate("PickupInternal", {
           screenHeader: itemData?.service_name,
           apiPath: itemData?.service_link,
           rider_id: storedRiderID,
-          order_id: orderID,
+          order_id: pickdropdata?.order_id || orderID,
           service_id: itemData?.service_id,
         });
       } catch (e) {
@@ -312,14 +310,9 @@ const Pickup = ({ navigation, route }) => {
                     <TouchableOpacity
                       style={styles.bottomButtons}
                       onPress={() => {
-                        if (route?.params?.pickdropdata) {
-                          orderID = route?.params?.pickdropdata?.order_id;
-                        } else {
-                          orderID = route?.params?.orderID;
-                        }
                         navigation.navigate("ConfirmOrder", {
                           rider_id: storedRiderID,
-                          order_id: orderID,
+                          order_id: pickdropdata?.order_id || orderID,
                           customer_name: fullData.customer_name,
                           customer_id: fullData.customer_id,
                           order_note: orderNote,
@@ -339,14 +332,9 @@ const Pickup = ({ navigation, route }) => {
                         { backgroundColor: "#c1c1c1" },
                       ]}
                       onPress={() => {
-                        if (route?.params?.pickdropdata) {
-                          orderID = route?.params?.pickdropdata?.order_id;
-                        } else {
-                          orderID = route?.params?.orderID;
-                        }
                         navigation.navigate("Cancel", {
                           rider_id: storedRiderID,
-                          order_id: orderID,
+                          order_id: pickdropdata?.order_id || orderID,
                           screenTitle: screenTitle,
                           recentOrders: route?.params?.recentOrders,
                         });
@@ -363,14 +351,9 @@ const Pickup = ({ navigation, route }) => {
                 <TouchableOpacity
                   style={[styles.bottomButtons]}
                   onPress={() => {
-                    if (route?.params?.pickdropdata) {
-                      orderID = route?.params?.pickdropdata?.order_id;
-                    } else {
-                      orderID = route?.params?.orderID;
-                    }
                     navigation.navigate("Cancel", {
                       rider_id: storedRiderID,
-                      order_id: orderID,
+                      order_id: pickdropdata?.order_id || orderID,
                       screenTitle: screenTitle,
                       recentOrders: route?.params?.recentOrders,
                     });

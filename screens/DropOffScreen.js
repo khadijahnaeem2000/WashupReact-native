@@ -71,6 +71,8 @@ const DropOff = ({ navigation, route }) => {
     }),
   });
 
+  console.log("screenType", screenType)
+
 
   // useFocusEffect(
   useEffect(() => {
@@ -220,9 +222,11 @@ const DropOff = ({ navigation, route }) => {
   async function fetchAnotherOrder() {
     let addAnotherOrderURL =
       env.URL + env.api_addanotherorder + `/${storedRiderID}/${customerID}`;
+      console.log("addAnotherOrderURL", addAnotherOrderURL , )
     const { isConnected } = await NetInfo.fetch();
     let savedToken = await SecureStore.getItemAsync("token");
     savedToken = savedToken.substring(1, savedToken.length - 1);
+    console.log("saved Tokenne" , savedToken)
     const myHeaders = new Headers();
     myHeaders.append("Accept", "application/json");
     myHeaders.append("Authorization", `Bearer ${savedToken}`);
@@ -242,12 +246,15 @@ const DropOff = ({ navigation, route }) => {
         );
         response = await response.json();
         setRefreshing(false);
-        navigation.navigate("Pickup", {
-          pickdropdata: response,
-          screenTitle: response.title,
-          orderID: response.order_id,
-          isNew:true
-        });
+
+        if (response?.order_id) {
+          setPaymentSent(false)
+          navigation.replace("Pickup", {
+            pickdropdata: response,
+            screenTitle: response.title,
+            orderID: response.order_id,
+          });
+        }
       } catch (error) {
         setRefreshing(false);
         error = "Request Timeout, Check Your Connection"
@@ -311,7 +318,12 @@ const DropOff = ({ navigation, route }) => {
         if (paymentResponse.status === "success" && !paymentResponse.data) {
           alert("Data Sent!");
           schedulePushNotification();
-          setPaymentSent(true);
+          if (screenType === "DropOff") {
+            setPaymentSent(false)
+            navigation.navigate("MyRides");
+          } else {
+            setPaymentSent(true)
+          }
           setRefreshing(false);
         } else if (
           paymentResponse.status === "success" &&
@@ -319,8 +331,13 @@ const DropOff = ({ navigation, route }) => {
         ) {
           alert("Data Sent!");
           setRefreshing(false);
+          if (screenType === "DropOff") {
+            setPaymentSent(false)
+            navigation.navigate("MyRides");
+          } else {
+            setPaymentSent(true)
+          }
           schedulePushNotification();
-          navigation.navigate("MyRides");
         } else if (paymentResponse.status === 'failed') {
           alert(paymentResponse.error);
           setRefreshing(false);
@@ -333,6 +350,7 @@ const DropOff = ({ navigation, route }) => {
         }
       })
       .catch((error) => {
+        console.log("errorrrr" , error)
         error = "Request Timeout, Check Your Connection"
           ? alert("Request Timeout, Check Your Connection")
           : alert("Server Error!");
@@ -611,7 +629,6 @@ const DropOff = ({ navigation, route }) => {
                       styles.PlaceOrderBtns,
                     ]}
                     onPress={() => {
-                      setPaymentSent(false);
                       fetchAnotherOrder();
                     }}
                   >

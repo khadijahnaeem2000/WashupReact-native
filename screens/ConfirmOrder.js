@@ -39,7 +39,7 @@ async function fetchWithTimeout(url, options, timeout) {
 
 
 const ConfirmOrder = ({ navigation, route }) => {
-  const { order_id, customer_name, customer_id, order_note, rider_id, location, isUserNew, addressID, recentOrders } = route.params;
+  const { order_id, customer_name, customer_id, order_note, rider_id, location, isUserNew, addressID, recentOrders , screenTitle } = route.params;
   const isFocused = useIsFocused()
   const notificationListener = useRef();
   const responseListener = useRef();
@@ -60,6 +60,8 @@ const ConfirmOrder = ({ navigation, route }) => {
       shouldSetBadge: false,
     }),
   });
+
+  console.log("order_id" ,order_id)
 
 
   useEffect(() => {
@@ -167,6 +169,9 @@ const ConfirmOrder = ({ navigation, route }) => {
         order_id: order_id,
         order_note: order_note,
       });
+
+
+      console.log("sendDataObjsendDataObj", sendDataObj)
     const confirmURL = env.URL + env.api_confirmpickup;
     let savedToken = await SecureStore.getItemAsync("token");
 
@@ -205,6 +210,7 @@ const ConfirmOrder = ({ navigation, route }) => {
         } else {
           confirmResponse = result;
         }
+        console.log("confirmResponse" ,confirmResponse)
         if (confirmResponse.status === "success") {
           alert("Data Sent!");
           schedulePushNotification();
@@ -267,15 +273,18 @@ const ConfirmOrder = ({ navigation, route }) => {
           "Request Timeout, Check Your Connection"
         );
         response = await response?.json();
-        // setEnableYes(false);
-        navigation.navigate("Pickup", {
-          pickdropdata: response,
-          screenTitle: response.title,
-          orderID: response.order_id,
-          isNew:true
-        });
-        setRefreshing(false);
+        console.log("itemmmmsamdmasda"  , response)
+        if(response?.customer_id){
+          console.log("")
+          navigation.navigate("Pickup", {
+            pickdropdata: response,
+            screenTitle: response.title,
+            orderID: response.order_id,
+          });
+          setRefreshing(false);
+        }
       } catch (error) {
+        Alert.alert("Something went")
         setRefreshing(false);
       }
     } else {
