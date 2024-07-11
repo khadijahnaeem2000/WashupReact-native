@@ -219,7 +219,7 @@ const RecentOrders = ({navigation , route}) => {
               <Icon name="phone" size={22} style={styles.iconInside} />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={changeScreen(item.buttonService, item)}
+              onPress={() => changeScreen(item.buttonService, item)}
               style={[styles.BtnInfo, style]}
             >
               <View style={styles.BtnStylingArea}>

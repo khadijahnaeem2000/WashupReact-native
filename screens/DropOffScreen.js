@@ -222,11 +222,11 @@ const DropOff = ({ navigation, route }) => {
   async function fetchAnotherOrder() {
     let addAnotherOrderURL =
       env.URL + env.api_addanotherorder + `/${storedRiderID}/${customerID}`;
-      console.log("addAnotherOrderURL", addAnotherOrderURL , )
+    console.log("addAnotherOrderURL", addAnotherOrderURL,)
     const { isConnected } = await NetInfo.fetch();
     let savedToken = await SecureStore.getItemAsync("token");
     savedToken = savedToken.substring(1, savedToken.length - 1);
-    console.log("saved Tokenne" , savedToken)
+    console.log("saved Tokenne", savedToken)
     const myHeaders = new Headers();
     myHeaders.append("Accept", "application/json");
     myHeaders.append("Authorization", `Bearer ${savedToken}`);
@@ -319,10 +319,8 @@ const DropOff = ({ navigation, route }) => {
           alert("Data Sent!");
           schedulePushNotification();
           if (screenType === "DropOff") {
-            setPaymentSent(false)
-            navigation.navigate("MyRides");
-          } else {
             setPaymentSent(true)
+          } else {
           }
           setRefreshing(false);
         } else if (
@@ -332,10 +330,13 @@ const DropOff = ({ navigation, route }) => {
           alert("Data Sent!");
           setRefreshing(false);
           if (screenType === "DropOff") {
-            setPaymentSent(false)
-            navigation.navigate("MyRides");
-          } else {
             setPaymentSent(true)
+          } else {
+            navigation.replace("Pickup", {
+              pickdropdata: paymentResponse?.data.original,
+              screenTitle: paymentResponse?.data.original?.title,
+              orderID: paymentResponse?.data.original?.order_id,
+            });
           }
           schedulePushNotification();
         } else if (paymentResponse.status === 'failed') {
@@ -350,7 +351,7 @@ const DropOff = ({ navigation, route }) => {
         }
       })
       .catch((error) => {
-        console.log("errorrrr" , error)
+        console.log("errorrrr", error)
         error = "Request Timeout, Check Your Connection"
           ? alert("Request Timeout, Check Your Connection")
           : alert("Server Error!");
