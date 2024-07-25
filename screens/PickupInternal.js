@@ -213,19 +213,8 @@ const PickupInternal = ({ navigation, route }) => {
     }
 
     let items_selected = [];
-    let emptyPieces = false
     for (let key in listData) {
-      if (listData[key]["quantity"] > 0) {
-        items_selected.push(listData[key]);
-      } else {
-        if (listData[key]['title'] === selectedItem) {
-          emptyPieces = true
-        }
-      }
-    }
-    if (emptyPieces) {
-      Alert.alert("Incorrect Pieces", "Pieces must be greater than 0");
-      return;
+      items_selected.push(listData[key]);
     }
     if (selectedItem === 'Item Name') {
       Alert.alert("Select Item", "Please Select any item first");

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Alert } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -90,10 +90,31 @@ const checkAuth = async () => {
   meterCheck(); //This function is for checking meter status
 };
 
+
 const AppNavigator = () => {
   const dispatch = useDispatch();
 
   const { isSignedIn, isTokenChecked , isSignout } = useSelector((state) => state.auth);
+  const [initialRoute, setInitialRoute] = useState(null)
+
+  
+
+
+
+  const checkLoggedIn = async () => {
+    const isLogin = await AsyncStorage.getItem("isLogin")
+    console.log("isLogingg", isLogin)
+    if (isLogin) {
+      setInitialRoute("Login")
+      dispatch({ type: authActions.SIGN_IN, payload: true })
+    } else setInitialRoute("Signup")
+
+  }
+
+  useEffect(() => {
+    checkLoggedIn()
+  }, [])
+
 
   if (!!isSignedIn & !!isTokenChecked) {
     return (
@@ -110,7 +131,7 @@ const AppNavigator = () => {
     );
   }
 
-  if (!isSignedIn) {
+  if (!isSignedIn && initialRoute !== null) {
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}  >
         <Stack.Screen
@@ -131,7 +152,7 @@ const AppNavigator = () => {
         />
       </Stack.Navigator>
     );
-  } else {
+  } else if (initialRoute!== null) {
     return (
       <Drawer.Navigator
         initialRouteName="Dashboard"

@@ -73,6 +73,7 @@ export const signOut = () => {
         await AsyncStorage.removeItem('email');
         await AsyncStorage.removeItem('rider_id');
         await SecureStore.deleteItemAsync('token');
+        await AsyncStorage.removeItem("isLogin")
         dispatch({ type: SIGN_OUT })
     }
 }
@@ -157,6 +158,7 @@ export const signIn = (email, password) => {
                     }
 
                     if (json.status === "success") {
+                        await AsyncStorage.setItem("isLogin", JSON.stringify(true))
                         dispatch({ type: SIGN_IN, payload: true })
                         dispatch({ type: REFRESHING, payload: false })
                     }
