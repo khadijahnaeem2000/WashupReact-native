@@ -15,6 +15,9 @@
     "production": {
       "android": {
         "gradleCommand": ":app:assembleProductionRelease"
+      },
+      "env": {
+        "APP_VARIANT": "production"
       }
     },
     "preview": {

@@ -8,6 +8,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { Image, Text, View, StyleSheet } from "react-native";
 import { env } from "../env";
 import profilePicture from "../assets/images/profilepic.png";
+import { CommonActions } from "@react-navigation/native";
 
 async function fetchWithTimeout(url, options, timeout) {
     return new Promise(async (resolve, reject) => {
@@ -38,7 +39,14 @@ function CustomDrawerContent(props) {
     const dispatch = useDispatch();
 
     const handleSignOut = async () => {
-        dispatch(authActions.signOut());
+        dispatch(authActions.signOut(() => {
+            props.navigation.dispatch(
+                CommonActions.reset({
+                    index: 1,
+                    routes: [{ name: "SignIn" }],
+                })
+            );
+        }));
     };
 
     useEffect(() => {

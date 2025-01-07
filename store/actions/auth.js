@@ -55,7 +55,7 @@ export const notSignedIn = () => {
         dispatch({ type: NOT_SIGNED_IN })
     }
 }
-export const signOut = () => {
+export const signOut = (onDone) => {
     return async dispatch => {
         let savedToken = await SecureStore.getItemAsync('token');
         savedToken = savedToken.substring(1, savedToken.length - 1);
@@ -72,13 +72,14 @@ export const signOut = () => {
         }, 10000, MAX_RETRIES);
         await AsyncStorage.removeItem('email');
         await AsyncStorage.removeItem('rider_id');
-        await SecureStore.deleteItemAsync('token');
         await AsyncStorage.removeItem("isLogin")
-        dispatch({ type: SIGN_OUT })
+        await SecureStore.deleteItemAsync('token');
+        onDone && onDone()
     }
 }
-export const signIn = (email, password) => {
+export const signIn = (email, password , onDone) => {
     URL_SignIn = env.URL + env.api_login
+
     return async dispatch => {
 
         dispatch({ type: REFRESHING, payload: true })
@@ -161,6 +162,7 @@ export const signIn = (email, password) => {
                         await AsyncStorage.setItem("isLogin", JSON.stringify(true))
                         dispatch({ type: SIGN_IN, payload: true })
                         dispatch({ type: REFRESHING, payload: false })
+                        onDone && onDone()
                     }
                     else {
                         alert("Login Failed! Wrong Username or Password!'")

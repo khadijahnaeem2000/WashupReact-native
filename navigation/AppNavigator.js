@@ -14,6 +14,7 @@ import * as authActions from "../store/actions/auth";
 import { useSelector, useDispatch } from "react-redux";
 import { env } from "../env";
 import DashboardStack from "./DashboardStack";
+import DrawerNavigation from "./DrawerNavigation";
 
 async function fetchWithTimeout(url, options, timeout) {
   return new Promise(async (resolve, reject) => {
@@ -34,6 +35,8 @@ async function fetchWithTimeout(url, options, timeout) {
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
+
+
 let storedEmail;
 let storedToken;
 const URL = env.URL + env.api_daystatus;
@@ -92,22 +95,14 @@ const checkAuth = async () => {
 
 
 const AppNavigator = () => {
-  const dispatch = useDispatch();
-
-  const { isSignedIn, isTokenChecked , isSignout } = useSelector((state) => state.auth);
   const [initialRoute, setInitialRoute] = useState(null)
-
-  
-
-
 
   const checkLoggedIn = async () => {
     const isLogin = await AsyncStorage.getItem("isLogin")
     console.log("isLogingg", isLogin)
     if (isLogin) {
-      setInitialRoute("Login")
-      dispatch({ type: authActions.SIGN_IN, payload: true })
-    } else setInitialRoute("Signup")
+      setInitialRoute("DrawerNavigation")
+    } else setInitialRoute("Login")
 
   }
 
@@ -115,82 +110,41 @@ const AppNavigator = () => {
     checkLoggedIn()
   }, [])
 
+  // if () {
+  //   return (
+  //     <AppLoading
+  //       startAsync={checkAuth}
+  //       onFinish={() => {
+  //         if (storedEmail && storedToken) {
+  //           dispatch(authActions.alreadySignedIn());
+  //         } else {
+  //           dispatch(authActions.notSignedIn());
+  //         }
+  //       }}
+  //     />
+  //   );
+  // }
 
-  if (!!isSignedIn & !!isTokenChecked) {
-    return (
-      <AppLoading
-        startAsync={checkAuth}
-        onFinish={() => {
-          if (storedEmail && storedToken) {
-            dispatch(authActions.alreadySignedIn());
-          } else {
-            dispatch(authActions.notSignedIn());
-          }
-        }}
+
+  return initialRoute && (
+    <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={initialRoute}>
+      <Stack.Screen
+        name="SignIn"
+        component={SignInScreen}
+        options={{ title: "Sign in", }}
       />
-    );
-  }
+      <Stack.Screen
+        name="ForgottenPassword"
+        component={ForgottenPasswordScreen}
+        options={{ title: "Forgotten Password?", }}
+      />
+      <Stack.Screen
+        name="DrawerNavigation"
+        component={DrawerNavigation}
+      />
 
-  if (!isSignedIn && initialRoute !== null) {
-    return (
-      <Stack.Navigator screenOptions={{ headerShown: false }}  >
-        <Stack.Screen
-          name="SignIn"
-          component={SignInScreen}
-          options={{
-            title: "Sign in",
-            animationTypeForReplace: isSignout ? "pop" : "push",
-          }}
-        />
-        <Stack.Screen
-          name="ForgottenPassword"
-          component={ForgottenPasswordScreen}
-          options={{
-            title: "Forgotten Password?",
-            animationTypeForReplace: isSignout ? "pop" : "push",
-          }}
-        />
-      </Stack.Navigator>
-    );
-  } else if (initialRoute!== null) {
-    return (
-      <Drawer.Navigator
-        initialRouteName="Dashboard"
-        labelStyle={{ fontSize: "2%" }}
-        screenOptions={{
-          headerShown: false,
-          backgroundColor: "#0c76e6",
-          padding: 0,
-          itemStyle: {
-            fontSize: 10,
-            padding: 10,
-            borderBottomColor: "#d6e8fc",
-            borderBottomWidth: 0.4,
-            backgroundColor: "transparent",
-            width: "auto",
-            borderRadius: 0,
-            marginVertical: 0,
-            marginHorizontal: 0,
-          },
-        }}
-        drawerContent={(props) => <CustomDrawerContent {...props} />}
-      >
-        <Drawer.Screen
-          name="DashboardStack"
-          component={DashboardStack}
-          options={{
-            drawerIcon: ({ focused, size }) => (
-              <Icon
-                name="signal"
-                color={focused ? "#03fcf8" : "white"}
-                size={22}
-                style={{ marginRight: -20 }}
-              />
-            ),
-          }}
-        />
-      </Drawer.Navigator>
-    );
-  }
+    </Stack.Navigator>
+  );
+
 };
 export default AppNavigator;

@@ -1,8 +1,8 @@
 const IS_DEV = process.env.NODE_ENV === 'development' || process.env.APP_VARIANT === 'development';
 export const env = {
-  //  URL: "http://app.washup.com.pk/",
+  URL: "http://app.washup.com.pk/",
   // URL: getEnvVars()?.apiUrl,
-  URL: IS_DEV ? 'https://dev.washup.com.pk/' : 'https://app.washup.com.pk/',
+  // URL: IS_DEV ? 'https://dev.washup.com.pk/' : 'https://app.washup.com.pk/',
   api_login: "api/login",
   api_logout: "api/logout",
   api_forgot: "api/forgot",

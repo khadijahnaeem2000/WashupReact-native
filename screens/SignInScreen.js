@@ -18,12 +18,13 @@ import { useNetInfo } from "@react-native-community/netinfo";
 import washupLogo from '../assets/images/logo.png'
 import authBackground from '../assets/images/authBackground.png'
 import * as authActions from '../store/actions/auth'
+import { CommonActions } from '@react-navigation/native';
 
 const authBackgroundURI = Image.resolveAssetSource(authBackground).uri
 const washupLogoURI = Image.resolveAssetSource(washupLogo).uri
 
 let stateForStyle
-const SignInScreen = () => {
+const SignInScreen = ({navigation}) => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -39,7 +40,14 @@ const SignInScreen = () => {
             Alert.alert("Internet Error!")
         }
         else {
-            dispatch(authActions.signIn(email, password))
+            dispatch(authActions.signIn(email, password , () => {
+                navigation.dispatch(
+                    CommonActions.reset({
+                        index: 1,
+                        routes: [{ name: "DrawerNavigation" }],
+                    })
+                );
+            }))
         }
     }
     if (state.refreshing) {
